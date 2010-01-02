@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: BNS Support
-Plugin URI: http://buynowshop.com/plugins/
+Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; and name of Theme installed. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administator(s) only.
-Version: 0.1
+Version: 0.2
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
@@ -95,6 +95,7 @@ class BNS_Support_Widget extends WP_Widget {
 
        		/* End - Display support information */
        		
+       		/* Gratuitous self-promotion */
        		echo '<h6>Compliments of <a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a> at <a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a></h6>';
 
       		/* After widget (defined by themes). */

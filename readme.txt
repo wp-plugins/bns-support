@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget
 Requires at least: 2.8
-Tested up to: 2.9
-Stable tag: 0.1
+Tested up to: 2.9.1
+Stable tag: 0.2
 
 Widget to display and share common helpful support details.
 
@@ -44,6 +44,12 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
 == Changelog ==
+= 0.2 =
+* compatibility check for 2.9.1 completed
+
+= 0.1.1 =
+* added direct URL to plugin page
+* decreased width of screenshot-3
 
 = 0.1 =
 * Initial Release
