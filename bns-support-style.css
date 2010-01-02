@@ -1,0 +1,9 @@
+/* CSS Document for WordPress plugin: BNS Support */
+
+.bns-support {}
+
+.bns-support h6 {
+	font-size: x-small;
+	font-style: italic;
+	font-weight: normal;
+}
