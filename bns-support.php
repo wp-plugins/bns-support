@@ -2,8 +2,8 @@
 /*
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
-Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administator(s) only.
-Version: 0.3
+Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
+Version: 0.3.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */

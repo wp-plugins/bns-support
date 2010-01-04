@@ -10,7 +10,7 @@ Widget to display and share common helpful support details.
 
 == Description ==
 
-Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; blog URL; WordPress version; current active theme installed; and, a list of active plugins. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
+Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
 
 == Installation ==
 
