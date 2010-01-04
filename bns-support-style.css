@@ -1,0 +1,8 @@
+/* CSS Document for WordPress plugin: BNS Support */
+div.bns-support {text-align: left;}
+div.bns-support h6 {
+  font-family:italic;
+  font-size:x-small;
+  font-weight:normal;
+  text-align:center;
+}
