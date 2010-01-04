@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com/
 Tags: support, widget
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 0.2
+Stable tag: 0.3
 
 Widget to display and share common helpful support details.
 
@@ -44,6 +44,13 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
 == Changelog ==
+= 0.3 =
+* adapted Lester Chan's WP-Pluginsused code to list active plugins
+* left justified displayed items via plugin CSS file
+
+= 0.2.1 =
+* minor adjustments to display
+
 = 0.2 =
 * compatibility check for 2.9.1 completed
 
