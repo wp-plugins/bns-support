@@ -3,7 +3,7 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 0.3.1
+Version: 0.4
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
@@ -227,8 +227,9 @@ class BNS_Support_Widget extends WP_Widget {
 		extract( $args );
 
 		/* User-selected settings. */
-		$title      = apply_filters('widget_title', $instance['title'] );
-		$blog_admin = $instance['blog_admin'];
+		$title        = apply_filters('widget_title', $instance['title'] );
+		$blog_admin   = $instance['blog_admin'];
+		$show_plugins = $instance['show_plugins'];
 		
     global $current_user;
     if ( (is_user_logged_in()) ) { /* Must be logged in */
@@ -274,9 +275,11 @@ class BNS_Support_Widget extends WP_Widget {
 
           /* ---- Active Plugins ---- */
           /* Code credit to Lester Chan's plugin at http://lesterchan.net/portfolio/programming/php/#wp-pluginsused */
-          echo '<li><strong>Active Plugins</strong>:';
-          display_pluginsused('active', $display = true);
-          echo '</li>';
+          if ( $show_plugins ) {
+            echo '<li><strong>Active Plugins</strong>:';
+            display_pluginsused('active', $display = true);
+            echo '</li>';
+          }
 
           echo '</ul>';
         /* End - Display support information */
@@ -297,8 +300,9 @@ class BNS_Support_Widget extends WP_Widget {
 		$instance = $old_instance;
 
 		/* Strip tags (if needed) and update the widget settings. */
-		$instance['title']      = strip_tags( $new_instance['title'] );
-		$instance['blog_admin'] = $new_instance['blog_admin'];
+		$instance['title']        = strip_tags( $new_instance['title'] );
+		$instance['blog_admin']   = $new_instance['blog_admin'];
+		$instance['show_plugins'] = $new_instance['show_plugins'];
 
 		return $instance;
 	}
@@ -306,8 +310,9 @@ class BNS_Support_Widget extends WP_Widget {
 	function form( $instance ) {
 		/* Set up some default widget settings. */
 		$defaults = array(
-				'title'       => get_bloginfo('name'),
-				'blog_admin'  => true,
+				'title'         => get_bloginfo('name'),
+				'blog_admin'    => true,
+				'show_plugins'  => false,
 			);
 		$instance = wp_parse_args( (array) $instance, $defaults );
 
@@ -321,6 +326,13 @@ class BNS_Support_Widget extends WP_Widget {
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['blog_admin'], true ); ?> id="<?php echo $this->get_field_id( 'blog_admin' ); ?>" name="<?php echo $this->get_field_name( 'blog_admin' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'blog_admin' ); ?>"><?php _e('Only Show Administrators?'); ?></label>
+		</p>
+
+    <hr />
+    
+    <p>
+			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_plugins'], true ); ?> id="<?php echo $this->get_field_id( 'show_plugins' ); ?>" name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
+			<label for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e('Show Active Plugins?'); ?></label>
 		</p>
 
   <?php
