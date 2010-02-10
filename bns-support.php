@@ -3,27 +3,27 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 0.4
+Version: 0.5
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
 
 /*
-	Copyright 2010  Edward Caissie  (email : edward.caissie@gmail.com)
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+* Plugin Changelog: see readme.txt
+*
+* The CSS, XHTML and design is released under GPL:
+* http://www.opensource.org/licenses/gpl-license.php
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+**
 */
 
 global $wp_version;
@@ -230,6 +230,7 @@ class BNS_Support_Widget extends WP_Widget {
 		$title        = apply_filters('widget_title', $instance['title'] );
 		$blog_admin   = $instance['blog_admin'];
 		$show_plugins = $instance['show_plugins'];
+		$credits      = $instance['credits'];
 		
     global $current_user;
     if ( (is_user_logged_in()) ) { /* Must be logged in */
@@ -285,7 +286,9 @@ class BNS_Support_Widget extends WP_Widget {
         /* End - Display support information */
        		
      		/* Gratuitous self-promotion */
-     		echo '<h6>Compliments of <a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a> at <a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a></h6>';
+          if ( $credits ) {
+            echo '<h6>Compliments of <a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a> at <a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a></h6>';
+          }
 
       		/* After widget (defined by themes). */
       		echo $after_widget;
@@ -303,6 +306,7 @@ class BNS_Support_Widget extends WP_Widget {
 		$instance['title']        = strip_tags( $new_instance['title'] );
 		$instance['blog_admin']   = $new_instance['blog_admin'];
 		$instance['show_plugins'] = $new_instance['show_plugins'];
+		$instance['credits']      = $new_instance['credits'];
 
 		return $instance;
 	}
@@ -313,6 +317,7 @@ class BNS_Support_Widget extends WP_Widget {
 				'title'         => get_bloginfo('name'),
 				'blog_admin'    => true,
 				'show_plugins'  => false,
+				'credits'       => true,
 			);
 		$instance = wp_parse_args( (array) $instance, $defaults );
 
@@ -333,6 +338,13 @@ class BNS_Support_Widget extends WP_Widget {
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_plugins'], true ); ?> id="<?php echo $this->get_field_id( 'show_plugins' ); ?>" name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
 			<label for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e('Show Active Plugins?'); ?></label>
+		</p>
+		
+		<hr />
+
+    <p>
+			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['credits'], true ); ?> id="<?php echo $this->get_field_id( 'credits' ); ?>" name="<?php echo $this->get_field_name( 'credits' ); ?>" />
+			<label for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e('Show credits?'); ?></label>
 		</p>
 
   <?php

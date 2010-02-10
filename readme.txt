@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com/
 Tags: support, widget
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 0.4
+Stable tag: 0.5
 
 Widget to display and share common helpful support details.
 
@@ -43,7 +43,14 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 2. A sample of the sidebar display using the [Desk Mess Mirrored](http://wordpress.org/extend/themes/desk-mess-mirrored/) theme.
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
+== Other Notes ==
+The CSS, XHTML and design is released under GPL:
+http://www.opensource.org/licenses/gpl-license.php
+
 == Changelog ==
+= 0.5 =
+* added option to hide credits
+
 = 0.4 =
 * added option for displaying active plugins
 
