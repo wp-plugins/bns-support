@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com/
 Tags: support, widget
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 0.5
+Stable tag: 0.5.1
 
 Widget to display and share common helpful support details.
 
@@ -44,10 +44,24 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
 == Other Notes ==
-The CSS, XHTML and design is released under GPL:
-http://www.opensource.org/licenses/gpl-license.php
+* Copyright 2009, 2010 Edward Caissie 
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.
+ 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+== Upgrade Notice ==
+Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 0.5.1 =
+* clarified the plugin's release under a GPL license
+* change credits display option to 'false' by default
+* minor option text changes
+* changed screenshot of option panel
+
 = 0.5 =
 * added option to hide credits
 

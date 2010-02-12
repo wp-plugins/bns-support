@@ -3,26 +3,29 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 0.5
+Version: 0.5.1
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 */
 
 /*
 **
-* Plugin Changelog: see readme.txt
+* Copyright 2009, 2010 Edward Caissie
 *
-* The CSS, XHTML and design is released under GPL:
-* http://www.opensource.org/licenses/gpl-license.php
-*
-* This program is free software; you can redistribute it and/or modify
+* This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+* Plugin Changelog: see readme.txt
 **
 */
 
@@ -217,7 +220,7 @@ class BNS_Support_Widget extends WP_Widget {
 		$widget_ops = array( 'classname' => 'bns-support', 'description' => __('Widget to display and share common helpful support details.') );
 
 		/* Widget control settings. */
-		$control_ops = array( 'width' => 400, 'height' => 350, 'id_base' => 'bns-support' );
+		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'bns-support' );
 
 		/* Create the widget. */
 		$this->WP_Widget( 'bns-support', 'BNS Support', $widget_ops, $control_ops );
@@ -317,7 +320,7 @@ class BNS_Support_Widget extends WP_Widget {
 				'title'         => get_bloginfo('name'),
 				'blog_admin'    => true,
 				'show_plugins'  => false,
-				'credits'       => true,
+				'credits'       => false,
 			);
 		$instance = wp_parse_args( (array) $instance, $defaults );
 
@@ -330,21 +333,21 @@ class BNS_Support_Widget extends WP_Widget {
 		
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['blog_admin'], true ); ?> id="<?php echo $this->get_field_id( 'blog_admin' ); ?>" name="<?php echo $this->get_field_name( 'blog_admin' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'blog_admin' ); ?>"><?php _e('Only Show Administrators?'); ?></label>
+			<label for="<?php echo $this->get_field_id( 'blog_admin' ); ?>"><?php _e('Only show to administrators?'); ?></label>
 		</p>
 
     <hr />
     
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['show_plugins'], true ); ?> id="<?php echo $this->get_field_id( 'show_plugins' ); ?>" name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e('Show Active Plugins?'); ?></label>
+			<label for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e('Show active plugins?'); ?></label>
 		</p>
 		
 		<hr />
 
     <p>
 			<input class="checkbox" type="checkbox" <?php checked( (bool) $instance['credits'], true ); ?> id="<?php echo $this->get_field_id( 'credits' ); ?>" name="<?php echo $this->get_field_name( 'credits' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e('Show credits?'); ?></label>
+			<label for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e('Show complimentary link to '); ?></label><a href="http://buynowshop.com/">BuyNowShop.com</a>?
 		</p>
 
   <?php
