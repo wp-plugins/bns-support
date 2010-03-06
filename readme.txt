@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com/
 Tags: support, widget
 Requires at least: 2.8
 Tested up to: 2.9.2
-Stable tag: 0.5.2
+Stable tag: 0.5.3
 
 Widget to display and share common helpful support details.
 
@@ -65,6 +65,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 0.5.3 =
+* corrected location of ending tag for the 'CSS Wrapper'
+* added 'margin-bottom:0;' property to credit style element
+
 = 0.5.2 =
 * compatible with WordPress version 2.9.2
 * updated license declaration
