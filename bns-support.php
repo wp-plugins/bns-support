@@ -3,17 +3,19 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 0.5.3
+Version: 0.6
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GPL2
 */
 
-/*  Copyright 2009, 2010  Edward Caissie  (email : edward.caissie@gmail.com)
+/*  Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as
-    published by the Free Software Foundation.
+    it under the terms of the GNU General Public License version 2,
+    as published by the Free Software Foundation.
+
+    You may NOT assume that you can use any other version of the GPL.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +25,9 @@ License: GPL2
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    The license for this software can also likely be found here:
+    http://www.gnu.org/licenses/gpl-2.0.html
 */
 
 global $wp_version;
@@ -236,12 +241,12 @@ class BNS_Support_Widget extends WP_Widget {
     
       if (( !$blog_admin ) || ( $current_user->user_level == '10' )) {
 
-    		/* Before widget (defined by themes). */
+    		echo '<div class="bns-support">'; /* CSS wrapper */
+    		
+        /* Before widget (defined by themes). */
     		echo $before_widget;
 
-        echo '<div class="bns-support">'; /* CSS wrapper */
-
-    		/* Title of widget (before and after defined by themes). */
+        /* Title of widget (before and after defined by themes). */
     		if ( $title )
     			echo $before_title . $title . $after_title;
 
@@ -254,7 +259,8 @@ class BNS_Support_Widget extends WP_Widget {
           /* ---- WordPress Version ---- */
           global $wp_version;
           echo '<li><strong>WordPress Version</strong>: ' . $wp_version . '</li>';
-
+          echo '<li><strong>Multisite: </strong>' . ( ( function_exists(is_multisite) && is_multisite() ) ? 'True' : 'False' ) . '</li>'; 
+          
           /* ---- Child Theme with Version and Parent Theme with Version ---- */
           $theme_version = ''; /* Clear variable */
           /* Get details of the theme / child theme */
@@ -270,15 +276,25 @@ class BNS_Support_Widget extends WP_Widget {
           /* Display string */
           echo '<li><strong>Theme</strong>: ' . $theme_version . '</li>';
           
-          /* ---- Current User Level ---- */
-          echo '<li><strong>Current User Level</strong>: ' . $current_user->user_level . '</li>';
-
-          /* ---- Active Plugins ---- */
-          /* Code credit to Lester Chan's plugin at http://lesterchan.net/portfolio/programming/php/#wp-pluginsused */
-          if ( $show_plugins ) {
-            echo '<li><strong>Active Plugins</strong>:';
-            display_pluginsused('active', $display = true);
-            echo '</li>';
+          if ( function_exists(is_multisite) && is_multisite() ) {
+            $current_site = get_current_site();
+            $home_domain = 'http://' . $current_site->domain . $current_site->path;
+            if ( $current_user->user_level < 10 ) {
+              /* If multisite is "true" then direct ALL users to main site administrator */
+              echo '<li>Please review with your main site administrator at <a href="' . $home_domain . '">' . $current_site->site_name . '</a> for additional assistance.</li>';
+            } else {
+              echo 'You are the Admin';
+            }
+          } else {
+            /* ---- Current User Level ---- */
+            echo '<li><strong>Current User Level</strong>: ' . $current_user->user_level . '</li>';
+            /* ---- Active Plugins ---- */
+            /* Code credit to Lester Chan's plugin at http://lesterchan.net/portfolio/programming/php/#wp-pluginsused */
+            if ( $show_plugins ) {
+              echo '<li><strong>Active Plugins</strong>:';
+              display_pluginsused('active', $display = true);
+              echo '</li>';
+            }
           }
 
           echo '</ul>';
@@ -289,10 +305,10 @@ class BNS_Support_Widget extends WP_Widget {
             echo '<h6>Compliments of <a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a> at <a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a></h6>';
           }
 
-          echo '</div> <!-- .bns-support -->'; /* end CSS wrapper */
-
       		/* After widget (defined by themes). */
       		echo $after_widget;
+
+          echo '</div> <!-- .bns-support -->'; /* end CSS wrapper */
       		
       } /* BA */
     } /* Logged in */

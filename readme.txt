@@ -1,10 +1,10 @@
 === BNS Support ===
 Contributors: cais
 Donate link: http://buynowshop.com/
-Tags: support, widget
+Tags: support, widget, multisite compatible
 Requires at least: 2.8
-Tested up to: 2.9.2
-Stable tag: 0.5.3
+Tested up to: 3.0
+Stable tag: 0.6
 
 Widget to display and share common helpful support details.
 
@@ -46,25 +46,35 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
 == Other Notes ==
-* Copyright 2009, 2010  Edward Caissie
+* Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License, version 2, as
-published by the Free Software Foundation.
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License version 2,
+  as published by the Free Software Foundation.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  You may NOT assume that you can use any other version of the GPL.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+  The license for this software can also likely be found here:
+  http://www.gnu.org/licenses/gpl-2.0.html
 
 == Upgrade Notice ==
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 0.6 =
+* compatible with WordPress version 3.0
+* added Multisite check; displays 'True' or 'False'
+* updated license declaration
+
 = 0.5.3 =
 * corrected location of ending tag for the 'CSS Wrapper'
 * added 'margin-bottom:0;' property to credit style element
