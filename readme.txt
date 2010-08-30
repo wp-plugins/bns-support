@@ -1,4 +1,14 @@
-=== BNS Support ===
+<<<<<<< .mine
+=== BNS Support ===
+Contributors: cais
+Donate link: http://buynowshop.com/
+Tags: support, widget, multisite compatible
+Requires at least: 2.8
+Tested up to: 3.0.1
+Stable tag: 0.7
+=======
+=== BNS Support ===>>>>>>> .r282416
+
 Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible
@@ -20,7 +30,22 @@ This section describes how to install the plugin and get it working.
 2. Activate through the 'Plugins' menu.
 3. Place the BNS Support widget appropriately in the Appearance | Widgets section of the dashboard.
 
--- or -
+<<<<<<< .mine
+== Changelog ==
+= 0.7 =
+* released: 29 Aug 2010
+* compatibility checked with WordPress 3.0.1
+* clean up code to meet WP Standards
+* added display of current PHP version
+* edited display text
+
+= 0.6 =
+* compatible with WordPress version 3.0
+* added Multisite check; displays 'True' or 'False'
+* updated license declaration
+=======
+-- or ->>>>>>> .r282416
+
 
 1. Go to 'Plugins' menu under your Dashboard
 2. Click on the 'Add New' link
