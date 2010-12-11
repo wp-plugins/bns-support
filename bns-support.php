@@ -3,14 +3,14 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 0.8
+Version: 0.9
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
-/* Last Revision: 29 Aug 2010 */
+/* Last Updated December 11, 2010 v0.9 */
 
 /*  Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
 
@@ -289,7 +289,9 @@ class BNS_Support_Widget extends WP_Widget {
 						}
 					} else {
 						/* ---- Current User Level ---- */
-						echo '<li><strong>Current User Level</strong>: ' . $current_user->user_level . '</li>';
+            $user_roles = $current_user->roles;
+            $user_role = array_shift($user_roles); /* TO-DO: Re-write to show all roles of current user */
+						echo '<li><strong>Current User Role</strong>: ' . $user_role . '</li>';
 						/* ---- Active Plugins ---- */
 						/* Code credit to Lester Chan's plugin at http://lesterchan.net/portfolio/programming/php/#wp-pluginsused */
 						if ( $show_plugins ) {
