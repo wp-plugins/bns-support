@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible
 Requires at least: 2.8
-Tested up to: 3.1
-Stable tag: 0.9
+Tested up to: 3.2
+Stable tag: 1.0
 
 Widget to display and share common helpful support details.
 
@@ -32,6 +32,8 @@ This section describes how to install the plugin and get it working.
 Reading this article for further assistance: http://wpfirstaid.com/2009/12/plugin-installation/
 
 == Frequently Asked Questions ==
+= How can I get support for this plugin? =
+Please note, support may be available on the WordPress Support forums; but, it may be faster to visit http://buynowshop.com/plugins/bns-support/ and leave a comment with the issue you are experiencing.
 
 = Why would I want to install this plugin? =
 Often times when you need help with something on your blog it can be quite useful to provide some basic, common information that most every person wanting to help would appreciate. This plugin gives a simple, easy to copy and paste, set of details for support purposes only.
@@ -46,7 +48,7 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
 == Other Notes ==
-* Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
+* Copyright 2009-2011  Edward Caissie  (email : edward.caissie@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License version 2,
@@ -70,10 +72,20 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.0 =
+* released June 2011
+* confirmed compatible with WordPress version 3.2-beta2-18085
+* re-sized options panel
+* updated options panel screenshot
+* enqueued stylesheet
+* added display of MySQL version
+* updated screenshots
+* TO-DO: Re-write to show all roles of current user (carried forward from v0.9)
+* TO-DO: Correct notices being generated via Lester Chan's code ... or replace?!
+
 = 0.9 =
 * released December 11, 2010
-* Changed from user level to user role
-* TO-DO: Re-write to show all roles of current user
+* Changed display from user "level" to user "role"
 
 = 0.8 =
 * correcting version number from 0.7.1

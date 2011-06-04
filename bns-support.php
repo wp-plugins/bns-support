@@ -3,16 +3,16 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 0.9
+Version: 1.0
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 */
 
-/* Last Updated December 11, 2010 v0.9 */
+/* Last Updated June 4, 2011 v1.0 */
 
-/*  Copyright 2009-2010  Edward Caissie  (email : edward.caissie@gmail.com)
+/*  Copyright 2009-2011  Edward Caissie  (email : edward.caissie@gmail.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2,
@@ -202,119 +202,123 @@ function display_pluginsused($type, $display = false) {
 }
 /* ---- Above credit to Lester Chan's plugin WP-PluginsUsed ---- */
 
-/* Add BNS Support style sheet */
-add_action( 'wp_head', 'add_BNS_Support_Header_Code' );
-
-function add_BNS_Support_Header_Code() {
-  echo '<link type="text/css" rel="stylesheet" href="' . get_bloginfo( 'url' ) . '/wp-content/plugins/bns-support/bns-support-style.css" />' . "\n";
+// Add BNS Support Scripts and Styles
+function BNS_Support_Scripts_and_Styles() {
+    /* Scripts */
+    /* Styles */
+  	wp_enqueue_style( 'BNS-Support-Style', plugin_dir_url( __FILE__ ) . '/bns-support-style.css', array(), '1.0', 'screen' );
 }
+add_action('wp_enqueue_scripts', 'BNS_Support_Scripts_and_Styles');
 
-/* Add our function to the widgets_init hook. */
-add_action( 'widgets_init', 'load_my_bns_support_widget' );
+/* Add to widgets_init */
+add_action( 'widgets_init', 'load_BNS_Support_Widget' );
 
-/* Function that registers our widget. */
-function load_my_bns_support_widget() {
+/* Register the widget. */
+function load_BNS_Support_Widget() {
 	register_widget( 'BNS_Support_Widget' );
 }
 
 class BNS_Support_Widget extends WP_Widget {
 
 	function BNS_Support_Widget() {
-		/* Widget settings. */
-		$widget_ops = array( 'classname' => 'bns-support', 'description' => __( 'Widget to display and share common helpful support details.' ) );
-
-		/* Widget control settings. */
-		$control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'bns-support' );
-
-		/* Create the widget. */
-		$this->WP_Widget( 'bns-support', 'BNS Support', $widget_ops, $control_ops );
+  		/* Widget settings. */
+  		$widget_ops = array( 'classname' => 'bns-support', 'description' => __( 'Widget to display and share common helpful support details.' ) );
+  
+  		/* Widget control settings. */
+  		$control_ops = array( 'width' => 200, 'id_base' => 'bns-support' );
+  
+  		/* Create the widget. */
+  		$this->WP_Widget( 'bns-support', 'BNS Support', $widget_ops, $control_ops );
 	}
 
 	function widget( $args, $instance ) {
-		extract( $args );
-
-		/* User-selected settings. */
-		$title        = apply_filters( 'widget_title', $instance['title'] );
-		$blog_admin   = $instance['blog_admin'];
-		$show_plugins = $instance['show_plugins'];
-		$credits      = $instance['credits'];
-
-		global $current_user;
-		if ( ( is_user_logged_in() ) ) { /* Must be logged in */
-			if (( !$blog_admin ) || ( $current_user->user_level == '10' )) {
-				echo '<div class="bns-support">'; /* CSS wrapper */
-
-				/* Before widget (defined by themes). */
-				echo $before_widget;
-
-				/* Title of widget (before and after defined by themes). */
-				if ( $title )
-				echo $before_title . $title . $after_title;
-
-				/* Start - Display support information */
-				echo '<ul>';
-
-					/* ---- Blog URL ---- */
-					echo '<li><strong>URL</strong>: ' . get_bloginfo( 'url' ) . '</li>';
-
-					/* ---- WordPress Version ---- */
-					global $wp_version;
-					echo '<li><strong>WordPress Version</strong>: ' . $wp_version . '</li>';
-  				echo '<li><strong>PHP version</strong>: ' . phpversion() . '</li>';
-					echo '<li><strong>Multisite Enabled: </strong>' . ( ( function_exists( 'is_multisite' ) && is_multisite() ) ? 'True' : 'False' ) . '</li>';
-
-					/* ---- Child Theme with Version and Parent Theme with Version ---- */
-					$theme_version = ''; /* Clear variable */
-					/* Get details of the theme / child theme */
-					$blog_css_url = get_stylesheet_directory() . '/style.css';
-					$my_theme_data = get_theme_data( $blog_css_url );
-					$parent_blog_css_url = get_template_directory() . '/style.css';
-					$parent_theme_data = get_theme_data( $parent_blog_css_url );
-					/* Create and append to string to be displayed */
-					$theme_version .= $my_theme_data['Name'] . ' v' . $my_theme_data['Version'];
-					if ( $blog_css_url != $parent_blog_css_url ) {
-						$theme_version .= ' a child of the ' . $parent_theme_data['Name'] . ' theme v' . $parent_theme_data['Version'];
-					}
-					/* Display string */
-					echo '<li><strong>Theme</strong>: ' . $theme_version . '</li>';
-
-					if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-						$current_site = get_current_site();
-						$home_domain = 'http://' . $current_site->domain . $current_site->path;
-						if ( $current_user->user_level < 10 ) {
-							/* If multisite is "true" then direct ALL users to main site administrator */
-							echo '<li>Please review with your main site administrator at <a href="' . $home_domain . '">' . $current_site->site_name . '</a> for additional assistance.</li>';
-						} else {
-							echo 'You are the Admin';
-						}
-					} else {
-						/* ---- Current User Level ---- */
-            $user_roles = $current_user->roles;
-            $user_role = array_shift($user_roles); /* TO-DO: Re-write to show all roles of current user */
-						echo '<li><strong>Current User Role</strong>: ' . $user_role . '</li>';
-						/* ---- Active Plugins ---- */
-						/* Code credit to Lester Chan's plugin at http://lesterchan.net/portfolio/programming/php/#wp-pluginsused */
-						if ( $show_plugins ) {
-							echo '<li><strong>Active Plugins</strong>:';
-							display_pluginsused( 'active', $display = true );
-							echo '</li>';
-						}
-					}
-
-					echo '</ul>';
-					/* End - Display support information */
-
-					/* Gratuitous self-promotion */
-					if ( $credits ) {
-						echo '<h6>Compliments of <a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a> at <a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a></h6>';
-					}
-
-				/* After widget (defined by themes). */
-				echo $after_widget;
-
-				echo '</div> <!-- .bns-support -->'; /* end CSS wrapper */
-			} /* BA */
-		} /* Logged in */
+  		extract( $args );
+  
+  		/* User-selected settings. */
+  		$title        = apply_filters( 'widget_title', $instance['title'] );
+  		$blog_admin   = $instance['blog_admin'];
+  		$show_plugins = $instance['show_plugins'];
+  		$credits      = $instance['credits'];
+  
+  		global $current_user;
+  		if ( ( is_user_logged_in() ) ) { /* Must be logged in */
+  		  // TO-DO: Change to conditional based on capability not `user_level`
+  			if (( !$blog_admin ) || ( $current_user->user_level == '10' )) {
+  				echo '<div class="bns-support">'; /* CSS wrapper */
+  
+  				/* Before widget (defined by themes). */
+  				echo $before_widget;
+  
+  				/* Title of widget (before and after defined by themes). */
+  				if ( $title )
+  				echo $before_title . $title . $after_title;
+  
+  				/* Start - Display support information */
+  				echo '<ul>';
+  
+  					/* ---- Blog URL ---- */
+  					echo '<li><strong>URL</strong>: ' . get_bloginfo( 'url' ) . '</li>';
+  
+  					/* ---- WordPress Version ---- */
+  					global $wp_version;
+  					echo '<li><strong>WordPress Version:</strong> ' . $wp_version . '</li>';
+    				echo '<li><strong>PHP version:</strong> ' . phpversion() . '</li>';
+    				echo '<li><strong>MySQL version:</strong> ' . mysqli_get_client_info() . '</li>';
+  					echo '<li><strong>Multisite Enabled:</strong> ' . ( ( function_exists( 'is_multisite' ) && is_multisite() ) ? 'True' : 'False' ) . '</li>';
+  
+  					/* ---- Child Theme with Version and Parent Theme with Version ---- */
+  					$theme_version = ''; /* Clear variable */
+  					/* Get details of the theme / child theme */
+  					$blog_css_url = get_stylesheet_directory() . '/style.css';
+  					$my_theme_data = get_theme_data( $blog_css_url );
+  					$parent_blog_css_url = get_template_directory() . '/style.css';
+  					$parent_theme_data = get_theme_data( $parent_blog_css_url );
+  					/* Create and append to string to be displayed */
+  					$theme_version .= $my_theme_data['Name'] . ' v' . $my_theme_data['Version'];
+  					if ( $blog_css_url != $parent_blog_css_url ) {
+  						$theme_version .= ' a child of the ' . $parent_theme_data['Name'] . ' theme v' . $parent_theme_data['Version'];
+  					}
+  					/* Display string */
+  					echo '<li><strong>Theme</strong>: ' . $theme_version . '</li>';
+  
+  					if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+  						$current_site = get_current_site();
+  						$home_domain = 'http://' . $current_site->domain . $current_site->path;
+  						// TO-DO: Change to conditional based on capability not `user_level`
+  						if ( $current_user->user_level < 10 ) {
+  							/* If multisite is "true" then direct ALL users to main site administrator */
+  							echo '<li>Please review with your main site administrator at <a href="' . $home_domain . '">' . $current_site->site_name . '</a> for additional assistance.</li>';
+  						} else {
+  							echo 'You are the Admin';
+  						}
+  					} else {
+  						/* ---- Current User Level ---- */
+              $user_roles = $current_user->roles;
+              $user_role = array_shift($user_roles); /* TO-DO: Re-write to show all roles of current user */
+  						echo '<li><strong>Current User Role</strong>: ' . $user_role . '</li>';
+  						/* ---- Active Plugins ---- */
+  						/* Code credit to Lester Chan's plugin at http://lesterchan.net/portfolio/programming/php/#wp-pluginsused */
+  						if ( $show_plugins ) {
+  							echo '<li><strong>Active Plugins</strong>:';
+  							display_pluginsused( 'active', $display = true );
+  							echo '</li>';
+  						}
+  					}
+  
+  					echo '</ul>';
+  					/* End - Display support information */
+  
+  					/* Gratuitous self-promotion */
+  					if ( $credits ) {
+  						echo '<h6>Compliments of <a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a> at <a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a></h6>';
+  					}
+  
+  				/* After widget (defined by themes). */
+  				echo $after_widget;
+  
+  				echo '</div> <!-- .bns-support -->'; /* end CSS wrapper */
+  			} /* Admin logged in */
+  		} /* Logged in */
 	}
 
 	function update( $new_instance, $old_instance ) {
@@ -341,7 +345,7 @@ class BNS_Support_Widget extends WP_Widget {
 
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
-			<input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:100%;" />
+			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
 		</p>
 
 		<p>
@@ -367,4 +371,4 @@ class BNS_Support_Widget extends WP_Widget {
 	}
 }
 ?>
-<?php /* Last Revision: 29 Aug 2010. Version: 0.7.1 */ ?>
+<?php /* Last Revision: June 4, 2011 version 1.0 */ ?>

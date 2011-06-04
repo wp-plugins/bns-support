@@ -1,10 +1,12 @@
 /*  This file is part of BNS Support
 
-    Copyright 2009, 2010  Edward Caissie  (email : edward.caissie@gmail.com)
+    Copyright 2009-2011  Edward Caissie  (email : edward.caissie@gmail.com)
 
     BNS Support is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
     published by the Free Software Foundation.
+    
+    You may NOT assume that you can use any other version of the GPL.
 
     BNS Support is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,3 +27,4 @@ div.bns-support h6 {
   margin-bottom: 0;
   text-align:center;
 }
+/* Last revised June 4, 2011 version 1.0 */
