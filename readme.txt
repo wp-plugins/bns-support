@@ -2,9 +2,9 @@
 Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible
-Requires at least: 2.8
-Tested up to: 3.2
-Stable tag: 1.0
+Requires at least: 3.0
+Tested up to: 3.3
+Stable tag: 1.1
 
 Widget to display and share common helpful support details.
 
@@ -72,6 +72,20 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.1 =
+* released November 2011
+* confirmed compatible with WordPress version 3.3
+* added PHPDoc style documentation
+* added `BNS Support TextDomain` i18n support
+* added `Enqueue Plugin Scripts and Styles`
+* added i18n support
+* replaced Lester Chan's code with the (nearly identical) 'Plugin Lister' code by Paul G Getty
+* added corrections to 'Plugin Lister' code
+* removed 'Plugin Lister' options and excess/unneeded code
+* removed 'Plugin Lister' description
+* completely merged, stripped out excess, and re-wrote (as needed) 'Plugin Lister' code
+* re-wrote Parent/Child-Theme Version code
+
 = 1.0 =
 * released June 2011
 * confirmed compatible with WordPress version 3.2-beta2-18085
