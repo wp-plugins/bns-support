@@ -3,7 +3,7 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 1.1
+Version: 1.1.1
 Text Domain: bns-support
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
@@ -21,9 +21,9 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link        http://buynowshop.com/plugins/bns-support/
  * @link        https://github.com/Cais/bns-support/
  * @link        http://wordpress.org/extend/plugins/bns-support/
- * @version     1.1
+ * @version     1.1.1
  * @author      Edward Caissie <edward.caissie@gmail.com>
- * @copyright   Copyright (c) 2009-2011, Edward Caissie
+ * @copyright   Copyright (c) 2009-2012, Edward Caissie
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
@@ -45,7 +45,9 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * The license for this software can also likely be found here:
  * http://www.gnu.org/licenses/gpl-2.0.html
  *
- * Last revised November 27, 2011
+ * Last revised April 6, 2012
+ * @version 1.1.1
+ * Added conditional checks for WordPress 3.4 deprecation of `get_theme_data`
  */
 
 /**
@@ -63,7 +65,7 @@ load_plugin_textdomain( 'bns-support' );
 /**
  * Check installed WordPress version for compatibility
  *
- * @package     BNS_Inline_Asides
+ * @package     BNS_Support
  * @since       0.1
  * @internal    Version 3.0 being used in reference to `is_child_theme`
  *
@@ -234,7 +236,10 @@ class BNS_Support_Widget extends WP_Widget {
                         /** Blog URL */
                         echo '<li><strong>URL</strong>: ' . get_bloginfo( 'url' ) . '</li>';
 
-                        /** Versions for various major factors */
+                        /**
+                         * Versions for various major factors
+                         * @todo Review `mysqli_get_client_info` usage
+                         */
                         global $wp_version;
                         echo '<li><strong>' . __( 'WordPress Version:', 'bns-support' ) . '</strong>' . ' ' . $wp_version . '</li>';
                         echo '<li><strong>' . __( 'PHP version:', 'bns-support' ) . '</strong>' . ' ' . phpversion() . '</li>';
@@ -242,14 +247,38 @@ class BNS_Support_Widget extends WP_Widget {
                         echo '<li><strong>' . __( 'Multisite Enabled:', 'bns-support' ) . '</strong> ' . ' ' . ( ( function_exists( 'is_multisite' ) && is_multisite() ) ? __( 'True', 'bns-support' ) : __( 'False', 'bns-support' ) ) . '</li>';
 
                         /** Theme Display with Parent/Child-Theme recognition */
-                        $blog_css_url = get_stylesheet_directory() . '/style.css';
-                        $my_theme_data = get_theme_data( $blog_css_url );
-                        $parent_blog_css_url = get_template_directory() . '/style.css';
-                        $parent_theme_data = get_theme_data( $parent_blog_css_url );
-                        if ( is_child_theme() ) {
-                            printf( __( '<li><strong>Theme:</strong> %1$s v%2$s a child-theme of %3$s v%4$s</li>', 'bns-support' ), $my_theme_data['Name'], $my_theme_data['Version'], $parent_theme_data['Name'], $parent_theme_data['Version'] );
+                        /**
+                         * Test what version of WordPress is installed ...
+                         * @todo optimize in the future for WordPress 3.4-beta1 and higher
+                         * @todo ... in other words, remove deprecated `get_theme_data` calls
+                         */
+                        if ( version_compare( $wp_version, "3.4-alpha", "<" ) ) {
+                            $blog_css_url = get_stylesheet_directory() . '/style.css';
+                            $my_theme_data = get_theme_data( $blog_css_url );
+                            $parent_blog_css_url = get_template_directory() . '/style.css';
+                            $parent_theme_data = get_theme_data( $parent_blog_css_url );
+                            if ( is_child_theme() ) {
+                                printf( __( '<li><strong>Theme:</strong> %1$s v%2$s a child-theme of %3$s v%4$s</li>', 'bns-support' ), $my_theme_data['Name'], $my_theme_data['Version'], $parent_theme_data['Name'], $parent_theme_data['Version'] );
+                            } else {
+                                printf( __( '<li><strong>Theme:</strong> %1$s v%2$s</li>', 'bns-support' ), $my_theme_data['Name'], $my_theme_data['Version'] );
+                            }
                         } else {
-                            printf( __( '<li><strong>Theme:</strong> %1$s v%2$s</li>', 'bns-support' ), $my_theme_data['Name'], $my_theme_data['Version'] );
+                            /** @var $active_theme_data - array object containing the current theme's data */
+                            $active_theme_data = wp_get_theme();
+                            if ( is_child_theme() ) {
+                                /** @var $parent_theme_data - array object containing the Parent Theme's data */
+                                $parent_theme_data = $active_theme_data->parent();
+                                /** @noinspection PhpUndefinedMethodInspection - IDE commentary */
+                                printf( __( '<li><strong>Theme:</strong> %1$s v%2$s a Child-Theme of %3$s v%4$s</li>', 'bns-support' ),
+                                    $active_theme_data->get( 'Name' ),
+                                    $active_theme_data->get( 'Version' ),
+                                    $parent_theme_data->get( 'Name' ),
+                                    $parent_theme_data->get( 'Version' ) );
+                            } else {
+                                printf( __( '<li><strong>Theme:</strong> %1$s v%2$s</li>', 'bns-support' ),
+                                    $active_theme_data->get( 'Name' ),
+                                    $active_theme_data->get( 'Version' ) );
+                            }
                         }
 
                         if ( function_exists( 'is_multisite' ) && is_multisite() ) {
@@ -344,4 +373,3 @@ class BNS_Support_Widget extends WP_Widget {
 
                 <?php }
 } // End class BNS_Support_Widget
-?>
