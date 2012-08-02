@@ -2,9 +2,11 @@
 Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible
-Requires at least: 3.0
-Tested up to: 3.4
-Stable tag: 1.1.1
+Requires at least: 3.4
+Tested up to: 3.4.1
+Stable tag: 1.2
+License: GNU General Public License v2
+License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 Widget to display and share common helpful support details.
 
@@ -72,6 +74,13 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.2 =
+* Required version set to 3.4
+* Remove deprecated calls to `get_theme_data`
+* Changed user role testing to capability testing
+* Documentation and code format updates
+* Programmatically add version number to enqueue calls
+
 = 1.1.1 =
 * Added conditional checks for WordPress 3.4 deprecation of `get_theme_data`
 * confirmed compatible with WordPress 3.4
