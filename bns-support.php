@@ -3,7 +3,7 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 1.6
+Version: 1.6.1
 Text Domain: bns-support
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
@@ -20,7 +20,7 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link        http://buynowshop.com/plugins/bns-support/
  * @link        https://github.com/Cais/bns-support/
  * @link        http://wordpress.org/extend/plugins/bns-support/
- * @version     1.6
+ * @version     1.6.1
  * @author      Edward Caissie <edward.caissie@gmail.com>
  * @copyright   Copyright (c) 2009-2013, Edward Caissie
  *
@@ -55,6 +55,14 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @version 1.6
  * @date    August 25, 2013
  * Added shortcode functionality
+ *
+ * @version 1.6.1
+ * @date    December 2013
+ * Added shortcode name parameter for core filter auto-creation
+ * Added new method `MySQL Version Details` and corrected the reported data
+ * Minor rearrangement of layout for better readability
+ *
+ * @todo Improve code structures to better allow more details/sub-details to be added
  */
 
 class BNS_Support_Widget extends WP_Widget {
@@ -148,6 +156,8 @@ class BNS_Support_Widget extends WP_Widget {
      * @package BNS_Support
      * @since   1.0
      *
+     * @uses    WP_CONTENT_DIR
+     * @uses    content_url
      * @uses    plugin_dir_path
      * @uses    plugin_dir_url
      * @uses    wp_enqueue_style
@@ -155,6 +165,10 @@ class BNS_Support_Widget extends WP_Widget {
      * @version 1.2
      * @date    August 2, 2012
      * Programmatically add version number to enqueue calls
+     *
+     * @version 1.6.1
+     * @date    December 7, 2013
+     * Add the option to put custom stylesheet in `/wp-content/` folder
      */
     function BNS_Support_scripts_and_styles() {
         /** Call the wp-admin plugin code */
@@ -165,9 +179,23 @@ class BNS_Support_Widget extends WP_Widget {
         /* Enqueue Scripts */
         /* Enqueue Styles */
         wp_enqueue_style( 'BNS-Support-Style', plugin_dir_url( __FILE__ ) . 'bns-support-style.css', array(), $bns_support_data['Version'], 'screen' );
+
+        /**
+         * Add custom styles
+         * NB: This location will be killed when plugin is updated due to core
+         * WordPress functionality - place the custom stylesheet directly in
+         * the /wp-content/ folder for future proofing your custom styles.
+         */
         if ( is_readable( plugin_dir_path( __FILE__ ) . 'bns-support-custom-style.css' ) ) { // Only enqueue if available
             wp_enqueue_style( 'BNS-Support-Custom-Style', plugin_dir_url( __FILE__ ) . 'bns-support-custom-style.css', array(), $bns_support_data['Version'], 'screen' );
         } /** End if - is readable */
+
+        /** For placing the custom stylesheet in the /wp-content/ folder */
+        /** @todo Find alternative to using WP_CONTENT_DIR constant? */
+        if ( is_readable( WP_CONTENT_DIR . '/bns-support-custom-style.css' ) ) {
+            wp_enqueue_style( 'BNS-Support-Custom-Style', content_url() . '/bns-support-custom-style.css', array(), $bns_support_data['Version'], 'screen' );
+        } /** End if - is readable */
+
 
     } /** End function - scripts and styles */
 
@@ -250,6 +278,41 @@ class BNS_Support_Widget extends WP_Widget {
         } /** End if - in array */
 
     } /** End function - mod rewrite check */
+
+
+    /**
+     * MySQL Version Details
+     * Returns a human readable version of the MySQL server version
+     *
+     * @package BNS_Support
+     * @since   1.6.1
+     *
+     * @uses    apply_filters
+     */
+    function mysql_version_details() {
+        /** MySQL Version */
+        /** @var $mysql_version_number - pull MySQL server version details */
+        $mysql_version_number = mysqli_get_server_version( mysqli_connect() );
+        /** Deconstruct the version number for more easily read output */
+        /** @var $main_version - stripped minor and sub versions */
+        $main_version = floor( $mysql_version_number / 10000 );
+        /** @var $minor_version - stripped major and sub versions */
+        $minor_version = floor( ( $mysql_version_number - $main_version * 10000 ) / 100 );
+        /** @var $sub_version - stripped major and minor versions */
+        $sub_version = $mysql_version_number - ( $main_version * 10000 + $minor_version * 100 );
+
+        /** @var string $mysql_version_output - re-construct the version number to a more easily read output */
+        $mysql_version_output = $main_version . '.' . $minor_version . '.' . $sub_version;
+
+        /** Return the filtered MySQL version */
+        return '<li class="bns-support-mysql-version">'
+        . apply_filters( 'bns_support_mysql_version',
+            sprintf( __( '<strong>MySQL version:</strong> %1$s', 'bns-support' ),
+                $mysql_version_output
+            )
+        )
+        . '</li>';
+    } /** End function - mysql version details */
 
 
     /**
@@ -368,6 +431,11 @@ class BNS_Support_Widget extends WP_Widget {
      * @date    April 14, 2013
      * Refactored 'MultiSite Enabled', 'PHP Version', and 'MySQL Version' to be
      * better filtered
+     *
+     * @version 1.6.1
+     * @date    December 7, 2013
+     * Add `WP_DEBUG` status reference
+     * Extracted `MySQL Version Details` into its own method
      */
     function widget( $args, $instance) {
         extract( $args );
@@ -405,9 +473,35 @@ class BNS_Support_Widget extends WP_Widget {
                 /** Versions for various major factors */
                 global $wp_version;
 
+                echo '<li class="bns-support-wp-version"><!-- WordPress Details start -->';
+
                 echo apply_filters( 'bns_support_wp_version',
-                    '<li class="bns-support-wp-version"><strong>' . __( 'WordPress Version:', 'bns-support' ) . '</strong>' . ' ' . $wp_version . '</li>'
+                     '<strong>' .__( 'WordPress Version:', 'bns-support' ) . '</strong>' . ' ' . $wp_version
                 );
+
+                /** WP_DEBUG Status */
+                echo '<ul><li class="bns-support-wp-debug-status">'
+                        . apply_filters( 'bns_support_wp_debug_status',
+                            sprintf( __( '<strong>WP_DEBUG Status:</strong> %1$s', 'bns-support' ),
+                                WP_DEBUG
+                                        ? __( 'True', 'bns-support' )
+                                        : __( 'False', 'bns-support' )
+                            )
+                        )
+                        . '</li></ul><!-- bns-support-wp-debug-status -->';
+
+                /** MultiSite Enabled */
+                echo '<ul><li class="bns-support-ms-enabled">'
+                        . apply_filters( 'bns_support_ms_enabled',
+                            sprintf( __( '<strong>Multisite Enabled:</strong> %1$s', 'bns-support' ),
+                                function_exists( 'is_multisite' ) && is_multisite()
+                                        ? __( 'True', 'bns-support' )
+                                        : __( 'False', 'bns-support' )
+                            )
+                        )
+                        . '</li><!-- bns-support-ms-enabled --></ul>';
+
+                echo '</li><!-- WordPress Details End -->';
 
                 /** @var $active_theme_data - array object containing the current theme's data */
                 $active_theme_data = wp_get_theme();
@@ -441,50 +535,34 @@ class BNS_Support_Widget extends WP_Widget {
                     );
                 } /** End if - is child theme */
 
-                /** MultiSite Enabled */
-                echo '<li class="bns-support-ms-enabled">'
-                        . apply_filters( 'bns_support_ms_enabled',
-                            sprintf( __( '<strong>Multisite Enabled:</strong> %1$s', 'bns-support' ),
-                                function_exists( 'is_multisite' ) && is_multisite()
-                                        ? __( 'True', 'bns-support' )
-                                        : __( 'False', 'bns-support' )
-                            )
-                        )
-                        . '</li><!-- bns-support-ms-enabled -->';
-
                 /** PHP Version */
-                echo '<li class="bns-support-php-version">'
-                        . apply_filters( 'bns_support_php_version',
-                            sprintf( __( '<strong>PHP version:</strong> %1$s', 'bns-support' ),
-                                phpversion()
-                            )
-                        )
-                        . '</li>';
+                echo '<li class="bns-support-php-version"><!-- PHP Details Start -->';
+
+                echo apply_filters( 'bns_support_php_version',
+                    sprintf( __( '<strong>PHP version:</strong> %1$s', 'bns-support' ),
+                        phpversion()
+                    )
+                );
 
                 /**
                  * Mod Rewrite Support
                  * @todo Find a method that works with minimum WordPress PHP required version
                  */
                 if ( function_exists( 'apache_get_modules' ) ) {
-                    echo '<li class="bns-support-mod-rewrite">'
+                    echo '<ul><li class="bns-support-mod-rewrite">'
                             . apply_filters( 'bns_support_mod_rewrite',
                                 sprintf( __( '<strong>Mod Rewrite:</strong> %1$s', 'bns-support' ),
                                     $this->mod_rewrite_check()
                                 )
                             )
-                            . '</li>';
+                            . '</li></ul>';
                 }
 
-                /** MySQL Version */
-                /** @noinspection PhpParamsInspection - MySQLi link not required to get client version */
-                echo '<li class="bns-support-mysql-version">'
-                        . apply_filters( 'bns_support_mysql_version',
-                            sprintf( __( '<strong>MySQL version:</strong> %1$s', 'bns-support' ),
-                                mysqli_get_client_info()
-                            )
-                        )
-                        . '</li>';
+                echo '</li><!-- PHP Details End -->';
 
+                echo $this->mysql_version_details();
+
+                /** Multisite Check */
                 if ( is_multisite() ) {
 
                     $current_site = get_current_site();
@@ -654,6 +732,10 @@ class BNS_Support_Widget extends WP_Widget {
      * @uses    the_widget
      *
      * @return  string
+     *
+     * @version 1.6.1
+     * @date    September 7, 2013
+     * Added shortcode name parameter for core filter auto-creation
      */
     function bns_support_shortcode( $atts ) {
         /** Let's start by capturing the output */
@@ -666,7 +748,7 @@ class BNS_Support_Widget extends WP_Widget {
                 'blog_admin'    => true,
                 'show_plugins'  => true,
                 'credits'       => false,
-            ), $atts ),
+            ), $atts, 'tech_support' ),
             $args = array(
                 /** clear variables defined by theme for widgets */
                 $before_widget  = '',
