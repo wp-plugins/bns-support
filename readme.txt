@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible, widget-only
 Requires at least: 3.4
-Tested up to: 3.8
-Stable tag: 1.6.2
+Tested up to: 3.8.1
+Stable tag: 1.6.3
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -34,6 +34,9 @@ This section describes how to install the plugin and get it working.
 Reading this article for further assistance: http://wpfirstaid.com/2009/12/plugin-installation/
 
 == Frequently Asked Questions ==
+= What can I use for a shortcode? =
+The shortcode `[ tech_support ]` (remove the spaces to use correctly) was recently added for those users that would like to use a post or page for the plugin output.
+
 = How can I get support for this plugin? =
 Please note, support may be available on the WordPress Support forums; but, it may be faster to visit http://buynowshop.com/plugins/bns-support/ and leave a comment with the issue you are experiencing.
 
@@ -50,7 +53,7 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 3. The sample information from the sidebar display copied and pasted into a common text editor.
 
 == Other Notes ==
-* Copyright 2009-2013  Edward Caissie  (email : edward.caissie@gmail.com)
+* Copyright 2009-2014  Edward Caissie  (email : edward.caissie@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License version 2,
@@ -74,6 +77,13 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.6.3 =
+* Released January 2014
+* Extract `PHP Details` into its own method
+* Add PHP Safe Mode status
+* Add PHP Allow URL fopen status
+* Updated `readme.txt` with `tech_support` shortcode reference
+
 = 1.6.2 =
 * Released December 2013
 * Corrected database connection
