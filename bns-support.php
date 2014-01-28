@@ -3,7 +3,7 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Simple display of useful support information in the sidebar. Easy to copy and paste details, such as: the blog name; WordPress version; name of installed theme; and, active plugins list. Help for those that help. The information is only viewable by logged-in readers; and, by optional default, the blog administrator(s) only.
-Version: 1.6.3
+Version: 1.7
 Text Domain: bns-support
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
@@ -20,7 +20,7 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @link           http://buynowshop.com/plugins/bns-support/
  * @link           https://github.com/Cais/bns-support/
  * @link           http://wordpress.org/extend/plugins/bns-support/
- * @version        1.6.3
+ * @version        1.7
  * @author         Edward Caissie <edward.caissie@gmail.com>
  * @copyright      Copyright (c) 2009-2014, Edward Caissie
  *
@@ -50,7 +50,8 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * @version        1.6.3
  * @date           January 23, 2014
  *
- * @todo           Improve code structures to better allow more details/sub-details to be added
+ * @version        1.7
+ * @date           January 27, 2014
  */
 class BNS_Support_Widget extends WP_Widget {
 	/**
@@ -64,7 +65,10 @@ class BNS_Support_Widget extends WP_Widget {
 	 */
 	function BNS_Support_Widget() {
 		/** Widget settings */
-		$widget_ops = array( 'classname' => 'bns-support', 'description' => __( 'Widget to display and share common helpful support details.', 'bns-support' ) );
+		$widget_ops = array(
+			'classname'   => 'bns-support',
+			'description' => __( 'Widget to display and share common helpful support details.', 'bns-support' )
+		);
 		/** Widget control settings */
 		$control_ops = array( 'width' => 200, 'id_base' => 'bns-support' );
 		/** Create the widget */
@@ -89,13 +93,28 @@ class BNS_Support_Widget extends WP_Widget {
 		/** End if - version compare */
 
 		/** Add scripts and styles */
-		add_action( 'wp_enqueue_scripts', array( $this, 'BNS_Support_scripts_and_styles' ) );
+		add_action(
+			'wp_enqueue_scripts', array(
+				$this,
+				'BNS_Support_scripts_and_styles'
+			)
+		);
 
 		/** Add custom headers */
-		add_filter( 'extra_theme_headers', array( $this, 'BNS_Support_extra_theme_headers' ) );
+		add_filter(
+			'extra_theme_headers', array(
+				$this,
+				'BNS_Support_extra_theme_headers'
+			)
+		);
 
 		/** Add shortcode */
-		add_shortcode( 'tech_support', array( $this, 'bns_support_shortcode' ) );
+		add_shortcode(
+			'tech_support', array(
+				$this,
+				'bns_support_shortcode'
+			)
+		);
 
 		/** Add widget */
 		add_action( 'widgets_init', array( $this, 'BNS_Support_load_widget' ) );
@@ -225,28 +244,34 @@ class BNS_Support_Widget extends WP_Widget {
 
 			if ( ! empty( $wp_tested ) ) {
 				$output .= '<li class="bns-support-theme-tested">'
-					. sprintf( '<strong>%1$s</strong>: %2$s',
+						   . sprintf(
+						'<strong>%1$s</strong>: %2$s',
 						apply_filters( 'bns_support_theme_tested', __( 'Tested To', 'bns-support' ) ),
-						$wp_tested )
-					. '</li>';
+						$wp_tested
+					)
+						   . '</li>';
 			}
 			/** End if - not empty tested */
 
 			if ( ! empty( $wp_required ) ) {
 				$output .= '<li class="bns-support-theme-required">'
-					. sprintf( '<strong>%1$s</strong>: %2$s',
+						   . sprintf(
+						'<strong>%1$s</strong>: %2$s',
 						apply_filters( 'bns_support_theme_required', __( 'Required', 'bns-support' ) ),
-						$wp_required )
-					. '</li>';
+						$wp_required
+					)
+						   . '</li>';
 			}
 			/** End if - not empty required */
 
 			if ( ! empty( $wp_template ) && is_child_theme() ) {
 				$output .= '<li class="bns-support-template">'
-					. sprintf( '<strong>%1$s</strong>: %2$s',
+						   . sprintf(
+						'<strong>%1$s</strong>: %2$s',
 						apply_filters( 'bns_support_template', __( 'Parent Version', 'bns-support' ) ),
-						$wp_template )
-					. '</li>';
+						$wp_template
+					)
+						   . '</li>';
 			}
 			/** End if - not empty tested */
 
@@ -264,36 +289,91 @@ class BNS_Support_Widget extends WP_Widget {
 	/**
 	 * Mod Rewrite Check
 	 *
-	 * @package BNS_Support
-	 * @since   1.5
+	 * @package    BNS_Support
+	 * @since      1.5
 	 *
-	 * @return  string - Enabled|Disabled
+	 * @uses       apply_filters
+	 *
+	 * @return  string|null - Enabled|Disabled
+	 *
+	 * @version    1.7
+	 * @date       January 25, 2014
+	 * Refactored to move entire check and output into method
 	 */
 	function mod_rewrite_check() {
-		if ( in_array( 'mod_rewrite', apache_get_modules() ) ) {
-			return __( 'Enabled', 'bns-support' );
+
+		if ( function_exists( 'apache_get_modules' ) ) {
+
+			if ( in_array( 'mod_rewrite', apache_get_modules() ) ) {
+				$rewrite_check = __( 'Mod Rewrite: Enabled', 'bns-support' );
+			} else {
+				$rewrite_check = __( 'Mod Rewrite: Disabled', 'bns-support' );
+			}
+
+			/** End if - in array */
+
+			return apply_filters( 'bns_support_mod_rewrite', '<li class="bns-support-mod-rewrite">' . $rewrite_check . '</li>' );
+
 		} else {
-			return __( 'Disabled', 'bns-support' );
+
+			/** If there is nothing to return then return nothing ... er, null */
+			return null;
+
 		}
-		/** End if - in array */
 
 	} /** End function - mod rewrite check */
+
+
+	/**
+	 * Memory Limit Value
+	 * Returns the value of the PHP Memory Limit or indicates no limit is set
+	 *
+	 * @package    BNS_Support
+	 * @since      1.7
+	 *
+	 * @uses       apply_filters
+	 *
+	 * @return    mixed|void
+	 */
+	function memory_limit_value() {
+
+		if ( ini_get( 'memory_limit' ) == '-1' ) {
+			$value = __( 'No Memory Limit Set', 'bns-support' );
+		} else {
+			$value = sprintf( __( 'Memory Limit: %1$s', 'bns-support' ), ini_get( 'memory_limit' ) );
+		}
+
+		/** End if - memory limit */
+
+		return apply_filters( 'bns_support_memory_limit_value', '<li class="bns-support-memory-limit">' . $value . '</li>' );
+
+	} /** End function - memory limit value */
 
 
 	/**
 	 * PHP Details
 	 * Returns the PHP details of the installation server
 	 *
-	 * @since    1.6.3
+	 * @package    BNS_Support
+	 * @since      1.6.3
 	 *
-	 * @uses     apply_filters
+	 * @uses       BNS_Support::memory_limit_value
+	 * @uses       BNS_Support::mod_rewrite_check
+	 * @uses       apply_filters
+	 *
+	 * @version    1.7
+	 * @date       January 25, 2014
+	 * Added `memory_limit_value` to output
+	 * Moved all Mod Rewrite code into `mod_rewrite_check` method
 	 */
 	function php_details() {
 		/** PHP Version */
 		$output = '<li class="bns-support-php-version"><!-- PHP Details Start -->';
 
-		$output .= apply_filters( 'bns_support_php_version',
-			sprintf( __( '<strong>PHP version:</strong> %1$s', 'bns-support' ),
+		$output .= apply_filters(
+			'bns_support_php_version',
+			sprintf(
+				__( '<strong>PHP version:</strong> %1$s', 'bns-support' ),
 				phpversion()
 			)
 		);
@@ -306,19 +386,11 @@ class BNS_Support_Widget extends WP_Widget {
 		/** Add PHP Allow URL fopen status */
 		$output .= ini_get( 'allow_url_fopen' ) ? '<li>' . __( 'Allow URL fopen:  On', 'bns-support' ) . '</li>' : '<li>' . __( 'Allow URL fopen:  Off', 'bns-support' ) . '</li>';
 
-		/**
-		 * Mod Rewrite Support
-		 * @todo Find a method that works with minimum WordPress PHP required version
-		 */
-		if ( function_exists( 'apache_get_modules' ) ) {
-			$output .= '<li class="bns-support-mod-rewrite">'
-				. apply_filters( 'bns_support_mod_rewrite',
-					sprintf( __( '<strong>Mod Rewrite:</strong> %1$s', 'bns-support' ),
-						$this->mod_rewrite_check()
-					)
-				)
-				. '</li>';
-		}
+		/** Add PHP Memory Limit value */
+		$output .= $this->memory_limit_value();
+
+		/** Add Mod Rewrite status */
+		$output .= $this->mod_rewrite_check();
 
 		$output .= '</ul><!-- .bns-support-php-sub-details -->';
 
@@ -328,6 +400,33 @@ class BNS_Support_Widget extends WP_Widget {
 
 	}
 	/** End function - bns support shortcode */
+
+
+	/**
+	 * GD Library Version
+	 * Returns the version of the GD extension.
+	 *
+	 * @package    BNS_Support
+	 * @since      1.7
+	 *
+	 * @uses       __
+	 */
+	function gd_library_version() {
+
+		if ( function_exists( 'gd_info' ) ) {
+
+			$info = gd_info();
+			$keys = array_keys( $info );
+
+			return sprintf( __( '<li><strong>GD Library Support:</strong> %1$s</li>', 'bns-support' ), $info[$keys[0]] );
+
+		} else {
+
+			return __( '<li><strong>GD Library Support:</strong> none</li>', 'bns-support' );
+
+		}
+
+	} /** End function - gd library version */
 
 
 	/**
@@ -361,99 +460,155 @@ class BNS_Support_Widget extends WP_Widget {
 		/** Return the filtered MySQL version */
 
 		return '<li class="bns-support-mysql-version">'
-		. apply_filters( 'bns_support_mysql_version',
-			sprintf( __( '<strong>MySQL version:</strong> %1$s', 'bns-support' ),
+			   . apply_filters(
+			'bns_support_mysql_version',
+			sprintf(
+				__( '<strong>MySQL version:</strong> %1$s', 'bns-support' ),
 				$mysql_version_output
 			)
 		)
-		. '</li>';
+			   . '</li>';
 	} /** End function - mysql version details */
 
 
 	/**
-	 * WP List All Active Plugins
-	 * @link    http://wordpress.org/extend/plugins/wp-plugin-lister/
-	 * @author  Paul G Petty
-	 * @link    http://paulgriffinpetty.com
+	 * Get Plugin Data
+	 * Collects the information about the plugin from the first 8192 characters
+	 * of the plugin file
+	 *
+	 * @package    BNS_Support
+	 * @since      1.7
+	 *
+	 * @param    $plugin_file
+	 *
+	 * @return    array|string
+	 */
+	function get_plugin_data( $plugin_file ) {
+		/** We don't need to write to the file, so just open for reading. */
+		$fp = fopen( $plugin_file, 'r' );
+
+		/** Pull only the first 8kB of the file in. */
+		$plugin_data = fread( $fp, 8192 );
+
+		/** PHP will close file handle, but we are good citizens. */
+		fclose( $fp );
+
+		preg_match( '|Plugin Name:(.*)$|mi', $plugin_data, $name );
+		preg_match( '|Plugin URI:(.*)$|mi', $plugin_data, $uri );
+		preg_match( '|Version:(.*)|i', $plugin_data, $version );
+		preg_match( '|Description:(.*)$|mi', $plugin_data, $description );
+		preg_match( '|Author:(.*)$|mi', $plugin_data, $author_name );
+		preg_match( '|Author URI:(.*)$|mi', $plugin_data, $author_uri );
+		preg_match( '|Text Domain:(.*)$|mi', $plugin_data, $text_domain );
+		preg_match( '|Domain Path:(.*)$|mi', $plugin_data, $domain_path );
+
+		foreach (
+			array(
+				'name',
+				'uri',
+				'version',
+				'description',
+				'author_name',
+				'author_uri',
+				'text_domain',
+				'domain_path'
+			) as $field
+		) {
+			if ( ! empty( ${$field} ) ) {
+				${$field} = trim( ${$field}[1] );
+			} else {
+				${$field} = '';
+			}
+			/** End if - not empty */
+		}
+		/** End foreach - array */
+
+		$plugin_data = array(
+			'Name'        => $name,
+			'Title'       => $name,
+			'PluginURI'   => $uri,
+			'Description' => $description,
+			'Author'      => $author_name,
+			'AuthorURI'   => $author_uri,
+			'Version'     => $version,
+			'TextDomain'  => $text_domain,
+			'DomainPath'  => $domain_path
+		);
+
+		return apply_filters( 'bns_support_plugin_data', $plugin_data );
+
+	}
+	/** End function - get plugin data */
+
+
+	/**
+	 * BNS List Active Plugins
+	 * @link       http://wordpress.org/extend/plugins/wp-plugin-lister/
+	 * @author     Paul G Petty
+	 * @link       http://paulgriffinpetty.com
 	 *
 	 * Some of the functionality of Paul G Getty's Plugin Lister code has been
 	 * used to replace the old code by Lester Chan
 	 *
-	 * @package BNS_Support
-	 * @since   1.1
 	 * Completely merged, stripped out excess, and rewritten 'Plugin Lister'
+	 * @package    BNS_Support
+	 * @since      1.1
 	 *
-	 * @version 1.4
-	 * @date    February 14, 2013
+	 * @uses       __
+	 * @uses       get_option
+	 * @uses       get_plugin_data
+	 *
+	 * @version    1.4
+	 * @date       February 14, 2013
 	 * Sorted out AuthorURI conditional test
+	 *
+	 * @version    1.7
+	 * @date       January 26, 2014
+	 * Renamed function to `BNS List Active Plugins` from `WP List All Active Plugins`
+	 * Clean up output and improve i18n implementation
+	 * Change from echo to return data
+	 * Added filter `bns_support_plugin_list`
+	 * Moved `get_plugin_data` out of function and call as method instead
+	 *
+	 * @todo       Address multiple contributor to plugin (currently only the first AuthorURI is used)
 	 */
-	function wp_list_all_active_plugins() {
-		if ( ! function_exists( 'get_plugin_data' ) ) {
-			function get_plugin_data( $plugin_file ) {
-				/** We don't need to write to the file, so just open for reading. */
-				$fp = fopen( $plugin_file, 'r' );
-
-				/** Pull only the first 8kB of the file in. */
-				$plugin_data = fread( $fp, 8192 );
-
-				/** PHP will close file handle, but we are good citizens. */
-				fclose( $fp );
-
-				preg_match( '|Plugin Name:(.*)$|mi', $plugin_data, $name );
-				preg_match( '|Plugin URI:(.*)$|mi', $plugin_data, $uri );
-				preg_match( '|Version:(.*)|i', $plugin_data, $version );
-				preg_match( '|Description:(.*)$|mi', $plugin_data, $description );
-				preg_match( '|Author:(.*)$|mi', $plugin_data, $author_name );
-				preg_match( '|Author URI:(.*)$|mi', $plugin_data, $author_uri );
-				preg_match( '|Text Domain:(.*)$|mi', $plugin_data, $text_domain );
-				preg_match( '|Domain Path:(.*)$|mi', $plugin_data, $domain_path );
-
-				foreach ( array( 'name', 'uri', 'version', 'description', 'author_name', 'author_uri', 'text_domain', 'domain_path' ) as $field ) {
-					if ( ! empty( ${$field} ) ) {
-						${$field} = trim( ${$field}[1] );
-					} else {
-						${$field} = '';
-					}
-					/** End if - not empty */
-				}
-				/** End foreach - array */
-
-				$plugin_data = array(
-					'Name'        => $name,
-					'Title'       => $name,
-					'PluginURI'   => $uri,
-					'Description' => $description,
-					'Author'      => $author_name,
-					'AuthorURI'   => $author_uri,
-					'Version'     => $version,
-					'TextDomain'  => $text_domain,
-					'DomainPath'  => $domain_path
-				);
-
-				return $plugin_data;
-
-			}
-			/** End function - get plugin data */
-
-		}
-		/** End if - not function exists */
+	function bns_list_active_plugins() {
 
 		$p = get_option( 'active_plugins' );
 
 		$plugin_list = '';
-		$plugin_list .= '<ul>';
+
+		$plugin_list .= '<ul class="bns-support-plugin-list">';
 
 		foreach ( $p as $q ) {
-			$d = get_plugin_data( WP_PLUGIN_DIR . '/' . $q );
-			$plugin_list .= '<li>';
-			$plugin_list .= __( '<strong><a href="' . $d['PluginURI'] . '">' . $d['Title'] . ' ' . $d['Version'] . '</a></strong>', 'bns-support' ) . '<br />';
+
+			$d = $this->get_plugin_data( WP_PLUGIN_DIR . '/' . $q );
+
+			$plugin_list .= '<li class="bns-support-plugin-list-item">';
 
 			if ( ! empty( $d['AuthorURI'] ) ) {
-				$plugin_list .= sprintf( __( 'by %1$s (<a href="' . $d['AuthorURI'] . '">url</a>)', 'bns-support' ), $d['Author'] ) . '<br />';
+				$plugin_list .= sprintf(
+									__( '%1$s by %2$s %3$s', 'bns-support' ),
+									sprintf(
+										'<strong><a href="' . $d['PluginURI'] . '">' . __( '%1$s %2$s', 'bns-support' ) . '</a></strong>',
+										$d['Title'],
+										$d['Version']
+									),
+									$d['Author'],
+									'(<a href="' . $d['AuthorURI'] . '">url</a>)'
+								) . '<br />';
 			} else {
-				$plugin_list .= sprintf( __( 'by %1$s', 'bns-support' ), $d['Author'] ) . '<br />';
+				$plugin_list .= sprintf(
+									__( '%1$s by %2$s', 'bns-support' ),
+									sprintf(
+										'<strong><a href="' . $d['PluginURI'] . '">' . __( '%1$s %2$s', 'bns-support' ) . '</a></strong>',
+										$d['Title'],
+										$d['Version']
+									),
+									$d['Author']
+								) . '<br />';
 			}
-			/** End if - not empty */
+			/** End if - not empty Author URI */
 
 			$plugin_list .= '</li>';
 
@@ -462,7 +617,7 @@ class BNS_Support_Widget extends WP_Widget {
 
 		$plugin_list .= '</ul>';
 
-		echo $plugin_list;
+		return apply_filters( 'bns_support_plugin_list', $plugin_list );
 
 	} /** End function - list all active plugins */
 
@@ -473,7 +628,7 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @package     BNS_Support
 	 * @since       0.1
 	 *
-	 * @uses        BNS_Support::wp_list_all_active_plugins
+	 * @uses        BNS_Support::bns_list_active_plugins
 	 * @uses        BNS_Support::mysql_version_details
 	 * @uses        BNS_Support::php_details
 	 * @uses        apply_filters
@@ -503,6 +658,11 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @version     1.6.3
 	 * @date        January 23, 2014
 	 * Extracted `PHP Details` into its own method
+	 *
+	 * @version     1.7
+	 * @date        January 27, 2014
+	 * Added GD Library Support display
+	 * Fix unordered list of active plugins
 	 */
 	function widget( $args, $instance ) {
 		extract( $args );
@@ -534,7 +694,8 @@ class BNS_Support_Widget extends WP_Widget {
 				echo '<ul>';
 
 				/** Blog URL */
-				echo apply_filters( 'bns_support_url',
+				echo apply_filters(
+					'bns_support_url',
 					'<li class="bns-support-url"><strong>URL</strong>: ' . get_bloginfo( 'url' ) . '</li>'
 				);
 
@@ -543,31 +704,36 @@ class BNS_Support_Widget extends WP_Widget {
 
 				echo '<li class="bns-support-wp-version"><!-- WordPress Details start -->';
 
-				echo apply_filters( 'bns_support_wp_version',
+				echo apply_filters(
+					'bns_support_wp_version',
 					'<strong>' . __( 'WordPress Version:', 'bns-support' ) . '</strong>' . ' ' . $wp_version
 				);
 
 				/** WP_DEBUG Status */
 				echo '<ul><li class="bns-support-wp-debug-status">'
-					. apply_filters( 'bns_support_wp_debug_status',
-						sprintf( __( '<strong>WP_DEBUG Status:</strong> %1$s', 'bns-support' ),
+					 . apply_filters(
+						'bns_support_wp_debug_status',
+						sprintf(
+							__( '<strong>WP_DEBUG Status:</strong> %1$s', 'bns-support' ),
 							WP_DEBUG
 								? __( 'True', 'bns-support' )
 								: __( 'False', 'bns-support' )
 						)
 					)
-					. '</li></ul><!-- bns-support-wp-debug-status -->';
+					 . '</li></ul><!-- bns-support-wp-debug-status -->';
 
 				/** MultiSite Enabled */
 				echo '<ul><li class="bns-support-ms-enabled">'
-					. apply_filters( 'bns_support_ms_enabled',
-						sprintf( __( '<strong>Multisite Enabled:</strong> %1$s', 'bns-support' ),
+					 . apply_filters(
+						'bns_support_ms_enabled',
+						sprintf(
+							__( '<strong>Multisite Enabled:</strong> %1$s', 'bns-support' ),
 							function_exists( 'is_multisite' ) && is_multisite()
 								? __( 'True', 'bns-support' )
 								: __( 'False', 'bns-support' )
 						)
 					)
-					. '</li><!-- bns-support-ms-enabled --></ul>';
+					 . '</li><!-- bns-support-ms-enabled --></ul>';
 
 				echo '</li><!-- WordPress Details End -->';
 
@@ -582,23 +748,27 @@ class BNS_Support_Widget extends WP_Widget {
 					/** @var $parent_theme_data - array object containing the Parent Theme's data */
 					$parent_theme_data = $active_theme_data->parent();
 					/** @noinspection PhpUndefinedMethodInspection - IDE commentary */
-					$output = sprintf( __( '<li class="bns-support-child-theme"><strong>Theme:</strong> %1$s v%2$s a Child-Theme of %3$s v%4$s%5$s</li>', 'bns-support' ),
+					$output = sprintf(
+						__( '<li class="bns-support-child-theme"><strong>Theme:</strong> %1$s v%2$s a Child-Theme of %3$s v%4$s%5$s</li>', 'bns-support' ),
 						$active_theme_data->get( 'Name' ),
 						$active_theme_data->get( 'Version' ),
 						$parent_theme_data->get( 'Name' ),
 						$parent_theme_data->get( 'Version' ),
 						$this->theme_version_check( $wp_tested, $wp_required, $wp_template )
 					);
-					echo apply_filters( 'bns_support_Child_theme',
+					echo apply_filters(
+						'bns_support_Child_theme',
 						$output
 					);
 				} else {
-					$output = sprintf( __( '<li class="bns-support-parent-theme"><strong>Theme:</strong> %1$s v%2$s%3$s</li>', 'bns-support' ),
+					$output = sprintf(
+						__( '<li class="bns-support-parent-theme"><strong>Theme:</strong> %1$s v%2$s%3$s</li>', 'bns-support' ),
 						$active_theme_data->get( 'Name' ),
 						$active_theme_data->get( 'Version' ),
 						$this->theme_version_check( $wp_tested, $wp_required, $wp_template )
 					);
-					echo apply_filters( 'bns_support_parent_theme',
+					echo apply_filters(
+						'bns_support_parent_theme',
 						$output
 					);
 				}
@@ -610,6 +780,9 @@ class BNS_Support_Widget extends WP_Widget {
 				/** Display MySQL Version Details */
 				echo $this->mysql_version_details();
 
+				/** Display GD Library Version */
+				echo $this->gd_library_version();
+
 				/** Multisite Check */
 				if ( is_multisite() ) {
 
@@ -618,13 +791,15 @@ class BNS_Support_Widget extends WP_Widget {
 					$home_domain = 'http://' . $current_site->domain . $current_site->path;
 					if ( current_user_can( 'manage_options' ) ) {
 						/** If multisite is "true" then direct ALL users to main site administrator */
-						echo apply_filters( 'bns_support_ms_user',
+						echo apply_filters(
+							'bns_support_ms_user',
 							'<li class="bns-support-ms-user">'
 							. sprintf( __( 'Please review with your main site administrator at %1$s for additional assistance.', 'bns-support' ), '<a href="' . $home_domain . '">' . $current_site->site_name . '</a>' )
 							. '</li>'
 						);
 					} else {
-						echo apply_filters( 'bns_support_ms_admin',
+						echo apply_filters(
+							'bns_support_ms_admin',
 							'<li class="bns-support-ms-admin">' . __( 'You are the Admin!', 'bns-support' ) . '</li>'
 						);
 					}
@@ -635,18 +810,23 @@ class BNS_Support_Widget extends WP_Widget {
 					/** ---- Current User Level ---- */
 					$user_roles = $current_user->roles;
 					$user_role  = array_shift( $user_roles );
-					echo apply_filters( 'bns_support_current_user',
+					echo apply_filters(
+						'bns_support_current_user',
 						'<li class="bns-support-current-user">'
 						. sprintf( __( '<strong>Current User Role</strong>: %1$s ', 'bns-support' ), $user_role )
 						. '</li>'
 					);
 
 					if ( $show_plugins ) {
-						echo apply_filters( 'bns_support_active_plugins',
-							'<li class="bns-support-active-plugins"><strong>' . __( 'Active Plugins:', 'bns-support' ) . '</strong></li>'
-						);
+						echo '<li class="bns-support-active-plugins">' . apply_filters(
+								'bns_support_active_plugins',
+								'<strong>' . __( 'Active Plugins:', 'bns-support' ) . '</strong>'
+							);
 
-						$this->wp_list_all_active_plugins();
+						/** Show Active Plugins List */
+						echo $this->bns_list_active_plugins();
+
+						echo '</li>';
 					}
 					/** End if - show plugins */
 
@@ -658,7 +838,8 @@ class BNS_Support_Widget extends WP_Widget {
 
 				/** Gratuitous self-promotion */
 				if ( $credits ) {
-					echo apply_filters( 'bns_support_credits',
+					echo apply_filters(
+						'bns_support_credits',
 						'<h6 class="bns-support-credits">'
 						. sprintf( __( 'Compliments of %1$s at %2$s', 'bns-support' ), '<a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a>', '<a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a>' )
 						. '</h6>'
@@ -735,26 +916,37 @@ class BNS_Support_Widget extends WP_Widget {
 
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bns-support' ); ?></label>
-			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
+			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>"
+				   name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
 		</p>
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['blog_admin'], true ); ?> id="<?php echo $this->get_field_id( 'blog_admin' ); ?>" name="<?php echo $this->get_field_name( 'blog_admin' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'blog_admin' ); ?>"><?php _e( 'Only show to administrators?', 'bns-support' ); ?></label>
-		</p>
-
-		<hr />
-
-		<p>
-			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['show_plugins'], true ); ?> id="<?php echo $this->get_field_id( 'show_plugins' ); ?>" name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e( 'Show active plugins?', 'bns-support' ); ?></label>
+			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['blog_admin'], true ); ?>
+				   id="<?php echo $this->get_field_id( 'blog_admin' ); ?>"
+				   name="<?php echo $this->get_field_name( 'blog_admin' ); ?>" />
+			<label
+				for="<?php echo $this->get_field_id( 'blog_admin' ); ?>"><?php _e( 'Only show to administrators?', 'bns-support' ); ?></label>
 		</p>
 
 		<hr />
 
 		<p>
-			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['credits'], true ); ?> id="<?php echo $this->get_field_id( 'credits' ); ?>" name="<?php echo $this->get_field_name( 'credits' ); ?>" />
-			<label for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e( 'Show complimentary link to ', 'bns-support' ); ?></label><a href="http://buynowshop.com/">BuyNowShop.com</a>?
+			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['show_plugins'], true ); ?>
+				   id="<?php echo $this->get_field_id( 'show_plugins' ); ?>"
+				   name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
+			<label
+				for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e( 'Show active plugins?', 'bns-support' ); ?></label>
+		</p>
+
+		<hr />
+
+		<p>
+			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['credits'], true ); ?>
+				   id="<?php echo $this->get_field_id( 'credits' ); ?>"
+				   name="<?php echo $this->get_field_name( 'credits' ); ?>" />
+			<label
+				for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e( 'Show complimentary link to ', 'bns-support' ); ?></label><a
+				href="http://buynowshop.com/">BuyNowShop.com</a>?
 		</p>
 
 	<?php
@@ -796,13 +988,16 @@ class BNS_Support_Widget extends WP_Widget {
 		ob_start();
 
 		/** Pull the widget together for use elsewhere */
-		the_widget( 'BNS_Support_Widget',
-			$instance = shortcode_atts( array(
-				'title'        => get_bloginfo( 'name' ),
-				'blog_admin'   => true,
-				'show_plugins' => true,
-				'credits'      => false,
-			), $atts, 'tech_support' ),
+		the_widget(
+			'BNS_Support_Widget',
+			$instance = shortcode_atts(
+				array(
+					'title'        => get_bloginfo( 'name' ),
+					'blog_admin'   => true,
+					'show_plugins' => true,
+					'credits'      => false,
+				), $atts, 'tech_support'
+			),
 			$args = array(
 				/** clear variables defined by theme for widgets */
 				$before_widget = '',

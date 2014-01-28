@@ -4,7 +4,7 @@ Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible, widget-only
 Requires at least: 3.4
 Tested up to: 3.8.1
-Stable tag: 1.6.3
+Stable tag: 1.7
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -77,11 +77,24 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.7 =
+* Released January 2014
+* Renamed function `WP List All Active Plugins` to `BNS List Active Plugins`
+* Added filter `bns_support_plugin_list`
+* Added filter `bns_support_plugin_data`
+* Added PHP Memory Limit value
+* Added GD Library Support display
+* Moved all of the Mod Rewrite code into its own method to better encapsulate
+* Moved `get_plugin_data` out of `bns_list_active_plugins` and call as method instead
+* Cleaned up output and improved i18n implementation in active plugin list
+* Fix unordered list of active plugins
+* Updated inline documentation
+
 = 1.6.3 =
 * Released January 2014
 * Extract `PHP Details` into its own method
-* Add PHP Safe Mode status
-* Add PHP Allow URL fopen status
+* Added PHP Safe Mode status
+* Added PHP Allow URL fopen status
 * Updated `readme.txt` with `tech_support` shortcode reference
 
 = 1.6.2 =
