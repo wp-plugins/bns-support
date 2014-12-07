@@ -3,8 +3,8 @@ Contributors: cais
 Donate link: http://buynowshop.com/
 Tags: support, widget, multisite compatible, widget-only
 Requires at least: 3.6
-Tested up to: 4.0
-Stable tag: 1.8.1
+Tested up to: 4.1
+Stable tag: 1.9
 License: GNU General Public License v2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -77,6 +77,17 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
+= 1.9 =
+* Released December 2014
+* Added constant defining `BNS_SUPPORT_HOME` as `BuyNowShop.com` for use in reference URL paths
+* Added `bns_support_php_details` filter hook to return statement in "PHP Details" method
+* Added `bns_support_gd_library_version` in the return statement of "GD Library Version" method
+* Left some wiggle room at the end of the output with the `bns_support_extended` filter hook
+* Implemented the `BNS_SUPPORT_HOME` constant
+* Renamed `BNS_Support_extra_theme_headers` to `extra_theme_headers`
+* Updated inline documentation
+* Use `apply_filters` on both `return` statements in "Mod Rewrite Check" method
+
 = 1.8.1 =
 * Released May 2014
 * Added check for defined constants `BNS_CUSTOM_PATH` and `BNS_CUSTOM_URL`

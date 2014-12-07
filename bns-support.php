@@ -3,7 +3,7 @@
 Plugin Name: BNS Support
 Plugin URI: http://buynowshop.com/plugins/bns-support/
 Description: Displays useful technical support information in a widget area (sidebar); or, via a shortcode on a post or page. The displayed details are easy to share by copying and pasting. Information available includes such things as the web site URL; the WordPress version; the current theme; a list of active plugins ... and much more. This is help for those that help. NB: The information is only viewable by logged-in users, and by default, only the site administrator(s).
-Version: 1.8.1
+Version: 1.9
 Text Domain: bns-support
 Author: Edward Caissie
 Author URI: http://edwardcaissie.com/
@@ -22,13 +22,16 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * NB: The information is only viewable by logged-in users, and by default, only
  * the site administrator(s).
  *
- * @package        BNS_Support
- * @link           http://buynowshop.com/plugins/bns-support/
- * @link           https://github.com/Cais/bns-support/
- * @link           http://wordpress.org/extend/plugins/bns-support/
- * @version        1.8.1
- * @author         Edward Caissie <edward.caissie@gmail.com>
- * @copyright      Copyright (c) 2009-2014, Edward Caissie
+ * @package     BNS_Support
+ * @version     1.9
+ * @date        December 2014
+ *
+ * @link        http://buynowshop.com/plugins/bns-support/
+ * @link        https://github.com/Cais/bns-support/
+ * @link        https://wordpress.org/plugins/bns-support/
+ *
+ * @author      Edward Caissie <edward.caissie@gmail.com>
+ * @copyright   Copyright (c) 2009-2014, Edward Caissie
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2, as published by the
@@ -49,33 +52,34 @@ License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  *
  * The license for this software can also likely be found here:
  * http://www.gnu.org/licenses/gpl-2.0.html
- *
- * @version        1.8
- * @date           May 2014
- * Modified "long" description to be more informative about the functionality
- *
- * @version        1.8.1
- * @date           May 2014
  */
 class BNS_Support_Widget extends WP_Widget {
 	/**
 	 * Constructor / BNS Support Widget
 	 *
-	 * @package            BNS_Support
-	 * @since              0.1
+	 * @package     BNS_Support
+	 * @since       0.1
 	 *
-	 * @internal           Requires WordPress version 3.6
-	 * @internal           @uses shortcode_atts - uses optional filter variable
+	 * @internal    Requires WordPress version 3.6
+	 * @internal    @uses shortcode_atts - uses optional filter variable
 	 *
-	 * @uses    (class)    WP_Widget
-	 * @uses    (constant) WP_CONTENT_DIR
-	 * @uses    (global)   $wp_version
-	 * @uses               add_action
-	 * @uses               apply_filters
-	 * @uses               content_url
+	 * @uses        (CONSTANT)  WP_CONTENT_DIR
+	 * @uses        (GLOBAL)    $wp_version
+	 * @uses        BNS_Support_Widget::WP_Widget(factory)
+	 * @uses        BNS_Support_Widget::BNS_Support_load_widget
+	 * @uses        BNS_Support_Widget::scripts_and_styles
+	 * @uses        BNS_Support_Widget::extra_theme_headers
+	 * @uses        BNS_Support_Widget::bns_support_shortcode
+	 * @uses        BNS_Support_Widget::bns_support_plugin_meta
+	 * @uses        __
+	 * @uses        add_action
+	 * @uses        add_filter
+	 * @uses        add_shortcode
+	 * @uses        apply_filters
+	 * @uses        content_url
 	 *
-	 * @version            1.8
-	 * @date               April 20, 2014
+	 * @version     1.8
+	 * @date        April 20, 2014
 	 * Added `bns_support_exit_message` filter
 	 * Added Plugin Row Meta details
 	 * Defined constants `BNS_CUSTOM_PATH` and `BNS_CUSTOM_URL`
@@ -83,9 +87,13 @@ class BNS_Support_Widget extends WP_Widget {
 	 * Removed `width` array element from `$control_ops` as not necessary
 	 * Updated required WordPress version to 3.6
 	 *
-	 * @version            1.8.1
-	 * @date               May 19, 2014
+	 * @version     1.8.1
+	 * @date        May 19, 2014
 	 * Added check for defined constants `BNS_CUSTOM_PATH` and `BNS_CUSTOM_URL`
+	 *
+	 * @version     1.9
+	 * @date        December 7, 2014
+	 * Added constant defining `BNS_SUPPORT_HOME` as `BuyNowShop.com` for use in reference URL paths
 	 */
 	function BNS_Support_Widget() {
 		/**
@@ -112,6 +120,12 @@ class BNS_Support_Widget extends WP_Widget {
 		/** Create the widget */
 		$this->WP_Widget( 'bns-support', 'BNS Support', $widget_ops, $control_ops );
 
+		/** Define plugin home URL */
+		if ( ! defined( 'BNS_SUPPORT_HOME' ) ) {
+			define( 'BNS_SUPPORT_HOME', 'BuyNowShop.com' );
+		}
+		/** End if - not defined */
+
 		/** Define location for BNS plugin customizations */
 		if ( ! defined( 'BNS_CUSTOM_PATH' ) ) {
 			define( 'BNS_CUSTOM_PATH', WP_CONTENT_DIR . '/bns-customs/' );
@@ -134,7 +148,7 @@ class BNS_Support_Widget extends WP_Widget {
 		add_filter(
 			'extra_theme_headers', array(
 				$this,
-				'BNS_Support_extra_theme_headers'
+				'extra_theme_headers'
 			)
 		);
 
@@ -175,8 +189,12 @@ class BNS_Support_Widget extends WP_Widget {
 	 *
 	 * @internal see WordPress core trac ticket #16868
 	 * @link     https://core.trac.wordpress.org/ticket/16868
+	 *
+	 * @version  1.9
+	 * @date     December 6, 2014
+	 * Renamed to `extra_theme_headers`
 	 */
-	function BNS_Support_extra_theme_headers( $headers ) {
+	function extra_theme_headers( $headers ) {
 
 		if ( ! in_array( 'WordPress Tested Version', $headers ) ) {
 			$headers[] = 'WordPress Tested Version';
@@ -204,25 +222,26 @@ class BNS_Support_Widget extends WP_Widget {
 	 * Enqueue Plugin Scripts and Styles
 	 * Adds plugin stylesheet and allows for custom stylesheet to be added by end-user.
 	 *
-	 * @package            BNS_Support
-	 * @since              1.0
+	 * @package BNS_Support
+	 * @since   1.0
 	 *
-	 * @uses    (constant) BNS_CUSTOM_PATH
-	 * @uses    (constant) BNS_CUSTOM_URL
-	 * @uses               plugin_dir_path
-	 * @uses               plugin_dir_url
-	 * @uses               wp_enqueue_style
+	 * @uses    (CONSTANT) BNS_CUSTOM_PATH
+	 * @uses    (CONSTANT) BNS_CUSTOM_URL
+	 * @uses    BNS_Support_Widget::plugin_data
+	 * @uses    plugin_dir_path
+	 * @uses    plugin_dir_url
+	 * @uses    wp_enqueue_style
 	 *
-	 * @version            1.2
-	 * @date               August 2, 2012
+	 * @version 1.2
+	 * @date    August 2, 2012
 	 * Programmatically add version number to enqueue calls
 	 *
-	 * @version            1.6.1
-	 * @date               December 7, 2013
+	 * @version 1.6.1
+	 * @date    December 7, 2013
 	 * Add the option to put custom stylesheet in `/wp-content/` folder
 	 *
-	 * @version            1.8
-	 * @date               April 20, 2014
+	 * @version 1.8
+	 * @date    April 20, 2014
 	 * Move custom stylesheet into `/wp-content/bns-customs/` folder
 	 */
 	function scripts_and_styles() {
@@ -267,6 +286,7 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @package  BNS_Support
 	 * @since    1.4
 	 *
+	 * @uses     __
 	 * @uses     apply_filters
 	 *
 	 * @param   $wp_tested
@@ -285,34 +305,34 @@ class BNS_Support_Widget extends WP_Widget {
 
 			if ( ! empty( $wp_tested ) ) {
 				$output .= '<li class="bns-support-theme-tested">'
-						   . sprintf(
+				           . sprintf(
 						'<strong>%1$s</strong>: %2$s',
 						apply_filters( 'bns_support_theme_tested', __( 'Tested To', 'bns-support' ) ),
 						$wp_tested
 					)
-						   . '</li>';
+				           . '</li>';
 			}
 			/** End if - not empty tested */
 
 			if ( ! empty( $wp_required ) ) {
 				$output .= '<li class="bns-support-theme-required">'
-						   . sprintf(
+				           . sprintf(
 						'<strong>%1$s</strong>: %2$s',
 						apply_filters( 'bns_support_theme_required', __( 'Required', 'bns-support' ) ),
 						$wp_required
 					)
-						   . '</li>';
+				           . '</li>';
 			}
 			/** End if - not empty required */
 
 			if ( ! empty( $wp_template ) && is_child_theme() ) {
 				$output .= '<li class="bns-support-template">'
-						   . sprintf(
+				           . sprintf(
 						'<strong>%1$s</strong>: %2$s',
 						apply_filters( 'bns_support_template', __( 'Parent Version', 'bns-support' ) ),
 						$wp_template
 					)
-						   . '</li>';
+				           . '</li>';
 			}
 			/** End if - not empty tested */
 
@@ -331,16 +351,21 @@ class BNS_Support_Widget extends WP_Widget {
 	/**
 	 * Mod Rewrite Check
 	 *
-	 * @package    BNS_Support
-	 * @since      1.5
+	 * @package BNS_Support
+	 * @since   1.5
 	 *
-	 * @uses       apply_filters
+	 * @uses    __
+	 * @uses    apply_filters
 	 *
 	 * @return  string|null - Enabled|Disabled
 	 *
-	 * @version    1.7
-	 * @date       January 25, 2014
+	 * @version 1.7
+	 * @date    January 25, 2014
 	 * Refactored to move entire check and output into method
+	 *
+	 * @version 1.9
+	 * @date    December 7, 2014
+	 * Use `apply_filters` on both `return` statements
 	 */
 	function mod_rewrite_check() {
 
@@ -359,7 +384,7 @@ class BNS_Support_Widget extends WP_Widget {
 		} else {
 
 			/** If there is nothing to return then return nothing ... er, null */
-			return null;
+			return apply_filters( 'bns_support_mod_rewrite', null );
 
 		}
 
@@ -371,12 +396,13 @@ class BNS_Support_Widget extends WP_Widget {
 	 * Memory Limit Value
 	 * Returns the value of the PHP Memory Limit or indicates no limit is set
 	 *
-	 * @package    BNS_Support
-	 * @since      1.7
+	 * @package BNS_Support
+	 * @since   1.7
 	 *
-	 * @uses       apply_filters
+	 * @uses    __
+	 * @uses    apply_filters
 	 *
-	 * @return    mixed|void
+	 * @return  mixed|void
 	 */
 	function memory_limit_value() {
 
@@ -398,17 +424,22 @@ class BNS_Support_Widget extends WP_Widget {
 	 * PHP Details
 	 * Returns the PHP details of the installation server
 	 *
-	 * @package    BNS_Support
-	 * @since      1.6.3
+	 * @package BNS_Support
+	 * @since   1.6.3
 	 *
-	 * @uses       BNS_Support::memory_limit_value
-	 * @uses       BNS_Support::mod_rewrite_check
-	 * @uses       apply_filters
+	 * @uses    BNS_Support::memory_limit_value
+	 * @uses    BNS_Support::mod_rewrite_check
+	 * @uses    __
+	 * @uses    apply_filters
 	 *
-	 * @version    1.7
-	 * @date       January 25, 2014
+	 * @version 1.7
+	 * @date    January 25, 2014
 	 * Added `memory_limit_value` to output
 	 * Moved all Mod Rewrite code into `mod_rewrite_check` method
+	 *
+	 * @version 1.9
+	 * @date    December 7, 2014
+	 * Added `bns_support_php_details` filter hook to return statement
 	 */
 	function php_details() {
 		/** PHP Version */
@@ -440,7 +471,7 @@ class BNS_Support_Widget extends WP_Widget {
 
 		$output .= '</li><!-- PHP Details End -->';
 
-		return $output;
+		return apply_filters( 'bns_support_php_details', $output );
 
 	}
 	/** End function - bns support shortcode */
@@ -450,10 +481,15 @@ class BNS_Support_Widget extends WP_Widget {
 	 * GD Library Version
 	 * Returns the version of the GD extension.
 	 *
-	 * @package    BNS_Support
-	 * @since      1.7
+	 * @package BNS_Support
+	 * @since   1.7
 	 *
-	 * @uses       __
+	 * @uses    __
+	 * @uses    apply_filters
+	 *
+	 * @version 1.9
+	 * @date    December 7, 2014
+	 * Added `bns_support_gd_library_version` in the return statement
 	 */
 	function gd_library_version() {
 
@@ -462,13 +498,16 @@ class BNS_Support_Widget extends WP_Widget {
 			$info = gd_info();
 			$keys = array_keys( $info );
 
-			return sprintf( __( '<li><strong>GD Library Support:</strong> %1$s</li>', 'bns-support' ), $info[$keys[0]] );
+			$results = sprintf( __( '<li><strong>GD Library Support:</strong> %1$s</li>', 'bns-support' ), $info[ $keys[0] ] );
 
 		} else {
 
-			return __( '<li><strong>GD Library Support:</strong> none</li>', 'bns-support' );
+			$results = __( '<li><strong>GD Library Support:</strong> none</li>', 'bns-support' );
 
 		}
+		/** End if - function exists */
+
+		return apply_filters( 'bns_support_gd_library_version', $results );
 
 	}
 	/** End function - gd library version */
@@ -481,6 +520,7 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @package BNS_Support
 	 * @since   1.6.1
 	 *
+	 * @uses    __
 	 * @uses    apply_filters
 	 *
 	 * @version 1.6.2
@@ -505,14 +545,14 @@ class BNS_Support_Widget extends WP_Widget {
 		/** Return the filtered MySQL version */
 
 		return '<li class="bns-support-mysql-version">'
-			   . apply_filters(
+		       . apply_filters(
 			'bns_support_mysql_version',
 			sprintf(
 				__( '<strong>MySQL version:</strong> %1$s', 'bns-support' ),
 				$mysql_version_output
 			)
 		)
-			   . '</li>';
+		       . '</li>';
 	}
 	/** End function - mysql version details */
 
@@ -524,6 +564,8 @@ class BNS_Support_Widget extends WP_Widget {
 	 *
 	 * @package    BNS_Support
 	 * @since      1.7
+	 *
+	 * @uses       apply_filters
 	 *
 	 * @param    $plugin_file
 	 *
@@ -600,7 +642,9 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @package    BNS_Support
 	 * @since      1.1
 	 *
+	 * @uses       (CONSTANT) WP_PLUGIN_DIR
 	 * @uses       __
+	 * @uses       apply_filters
 	 * @uses       get_option
 	 * @uses       get_plugin_data
 	 *
@@ -632,25 +676,25 @@ class BNS_Support_Widget extends WP_Widget {
 
 			if ( ! empty( $d['AuthorURI'] ) ) {
 				$plugin_list .= sprintf(
-									__( '%1$s by %2$s %3$s', 'bns-support' ),
-									sprintf(
-										'<strong><a href="' . $d['PluginURI'] . '">' . __( '%1$s %2$s', 'bns-support' ) . '</a></strong>',
-										$d['Title'],
-										$d['Version']
-									),
-									$d['Author'],
-									'(<a href="' . $d['AuthorURI'] . '">url</a>)'
-								) . '<br />';
+					                __( '%1$s by %2$s %3$s', 'bns-support' ),
+					                sprintf(
+						                '<strong><a href="' . $d['PluginURI'] . '">' . __( '%1$s %2$s', 'bns-support' ) . '</a></strong>',
+						                $d['Title'],
+						                $d['Version']
+					                ),
+					                $d['Author'],
+					                '(<a href="' . $d['AuthorURI'] . '">url</a>)'
+				                ) . '<br />';
 			} else {
 				$plugin_list .= sprintf(
-									__( '%1$s by %2$s', 'bns-support' ),
-									sprintf(
-										'<strong><a href="' . $d['PluginURI'] . '">' . __( '%1$s %2$s', 'bns-support' ) . '</a></strong>',
-										$d['Title'],
-										$d['Version']
-									),
-									$d['Author']
-								) . '<br />';
+					                __( '%1$s by %2$s', 'bns-support' ),
+					                sprintf(
+						                '<strong><a href="' . $d['PluginURI'] . '">' . __( '%1$s %2$s', 'bns-support' ) . '</a></strong>',
+						                $d['Title'],
+						                $d['Version']
+					                ),
+					                $d['Author']
+				                ) . '<br />';
 			}
 			/** End if - not empty Author URI */
 
@@ -670,30 +714,41 @@ class BNS_Support_Widget extends WP_Widget {
 	/**
 	 * Widget
 	 *
-	 * @package     BNS_Support
-	 * @since       0.1
+	 * @package BNS_Support
+	 * @since   0.1
 	 *
-	 * @uses        BNS_Support::bns_list_active_plugins
-	 * @uses        BNS_Support::mysql_version_details
-	 * @uses        BNS_Support::php_details
-	 * @uses        apply_filters
-	 * @uses        current_user_can
-	 * @uses        get_current_site
-	 * @uses        is_child_theme
-	 * @uses        is_multisite
-	 * @uses        wp_get_theme
+	 * @uses    (CONSTANT) WP_DEBUG
+	 * @uses    (CONSTANT) BNS_SUPPORT_HOME
+	 * @uses    (GLOBAL) $current_user
+	 * @uses    BNS_Support_Widget::bns_list_active_plugins
+	 * @uses    BNS_Support_Widget::gd_library_version
+	 * @uses    BNS_Support_Widget::mysql_version_details
+	 * @uses    BNS_Support_Widget::php_details
+	 * @uses    __
+	 * @uses    apply_filters
+	 * @uses    current_user_can
+	 * @uses    get_bloginfo
+	 * @uses    get_current_site
+	 * @uses    is_child_theme
+	 * @uses    is_multisite
+	 * @uses    is_user_logged_in
+	 * @uses    wp_get_theme
 	 *
 	 * @param   array $args
 	 * @param   array $instance
 	 *
-	 * @version     1.7
-	 * @date        January 27, 2014
+	 * @version 1.7
+	 * @date    January 27, 2014
 	 * Added GD Library Support display
 	 * Fix unordered list of active plugins
 	 *
-	 * @version     1.7.1
-	 * @date        February 2, 2014
+	 * @version 1.7.1
+	 * @date    February 2, 2014
 	 * Removed CSS wrapper and adjusted CSS elements accordingly
+	 *
+	 * @version 1.9
+	 * @date    December 7, 2014
+	 * Implemented the `BNS_SUPPORT_HOME` constant
 	 */
 	function widget( $args, $instance ) {
 		extract( $args );
@@ -741,7 +796,7 @@ class BNS_Support_Widget extends WP_Widget {
 
 				/** WP_DEBUG Status */
 				echo '<ul><li class="bns-support-wp-debug-status">'
-					 . apply_filters(
+				     . apply_filters(
 						'bns_support_wp_debug_status',
 						sprintf(
 							__( '<strong>WP_DEBUG Status:</strong> %1$s', 'bns-support' ),
@@ -750,11 +805,11 @@ class BNS_Support_Widget extends WP_Widget {
 								: __( 'False', 'bns-support' )
 						)
 					)
-					 . '</li></ul><!-- bns-support-wp-debug-status -->';
+				     . '</li></ul><!-- bns-support-wp-debug-status -->';
 
 				/** MultiSite Enabled */
 				echo '<ul><li class="bns-support-ms-enabled">'
-					 . apply_filters(
+				     . apply_filters(
 						'bns_support_ms_enabled',
 						sprintf(
 							__( '<strong>Multisite Enabled:</strong> %1$s', 'bns-support' ),
@@ -763,7 +818,7 @@ class BNS_Support_Widget extends WP_Widget {
 								: __( 'False', 'bns-support' )
 						)
 					)
-					 . '</li><!-- bns-support-ms-enabled --></ul>';
+				     . '</li><!-- bns-support-ms-enabled --></ul>';
 
 				echo '</li><!-- WordPress Details End -->';
 
@@ -817,8 +872,7 @@ class BNS_Support_Widget extends WP_Widget {
 				if ( is_multisite() ) {
 
 					$current_site = get_current_site();
-					/** @noinspection PhpUndefinedFieldInspection */
-					$home_domain = 'http://' . $current_site->domain . $current_site->path;
+					$home_domain  = 'http://' . $current_site->domain . $current_site->path;
 					if ( current_user_can( 'manage_options' ) ) {
 						/** If multisite is "true" then direct ALL users to main site administrator */
 						echo apply_filters(
@@ -863,6 +917,9 @@ class BNS_Support_Widget extends WP_Widget {
 				}
 				/** End if - is multisite */
 
+				/** Leave some wiggle room at the end of the output */
+				apply_filters( 'bns_support_extended', null );
+
 				echo '</ul>';
 				/** End - Display BNS Support information */
 
@@ -871,7 +928,7 @@ class BNS_Support_Widget extends WP_Widget {
 					echo apply_filters(
 						'bns_support_credits',
 						'<h6 class="bns-support-credits">'
-						. sprintf( __( 'Compliments of %1$s at %2$s', 'bns-support' ), '<a href="http://buynowshop.com/wordpress-services" target="_blank">WordPress Services</a>', '<a href="http://buynowshop.com" target="_blank">BuyNowShop.com</a>' )
+						. sprintf( __( 'Compliments of %1$s at %2$s', 'bns-support' ), '<a href="http://' . BNS_SUPPORT_HOME . '/wordpress-services/" target="_blank">WordPress Services</a>', '<a href="http://' . BNS_SUPPORT_HOME . '" target="_blank">' . BNS_SUPPORT_HOME . '</a>' )
 						. '</h6>'
 					);
 				}
@@ -921,8 +978,11 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @package BNS_Support
 	 * @since   0.1
 	 *
-	 * @uses    get_field_id
-	 * @uses    get_field_name
+	 * @uses    (CONSTANT) BNS_SUPPORT_HOME
+	 * @uses    WP_Widget::get_field_id
+	 * @uses    WP_Widget::get_field_name
+	 * @uses    _e
+	 * @uses    checked
 	 * @uses    wp_parse_args
 	 *
 	 * @param   array $instance
@@ -932,6 +992,10 @@ class BNS_Support_Widget extends WP_Widget {
 	 * @version 1.6
 	 * @date    September 7, 2013
 	 * Changed `show_plugins` default to true (more common usage than false)
+	 *
+	 * @version 1.9
+	 * @date    December 7, 2014
+	 * Implemented the `BNS_SUPPORT_HOME` constant
 	 */
 	function form( $instance ) {
 		/* Set up some default widget settings. */
@@ -946,13 +1010,13 @@ class BNS_Support_Widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'bns-support' ); ?></label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>"
-				   name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
+			       name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" />
 		</p>
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['blog_admin'], true ); ?>
-				   id="<?php echo $this->get_field_id( 'blog_admin' ); ?>"
-				   name="<?php echo $this->get_field_name( 'blog_admin' ); ?>" />
+			       id="<?php echo $this->get_field_id( 'blog_admin' ); ?>"
+			       name="<?php echo $this->get_field_name( 'blog_admin' ); ?>" />
 			<label
 				for="<?php echo $this->get_field_id( 'blog_admin' ); ?>"><?php _e( 'Only show to administrators?', 'bns-support' ); ?></label>
 		</p>
@@ -961,8 +1025,8 @@ class BNS_Support_Widget extends WP_Widget {
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['show_plugins'], true ); ?>
-				   id="<?php echo $this->get_field_id( 'show_plugins' ); ?>"
-				   name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
+			       id="<?php echo $this->get_field_id( 'show_plugins' ); ?>"
+			       name="<?php echo $this->get_field_name( 'show_plugins' ); ?>" />
 			<label
 				for="<?php echo $this->get_field_id( 'show_plugins' ); ?>"><?php _e( 'Show active plugins?', 'bns-support' ); ?></label>
 		</p>
@@ -971,11 +1035,11 @@ class BNS_Support_Widget extends WP_Widget {
 
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( ( bool ) $instance['credits'], true ); ?>
-				   id="<?php echo $this->get_field_id( 'credits' ); ?>"
-				   name="<?php echo $this->get_field_name( 'credits' ); ?>" />
+			       id="<?php echo $this->get_field_id( 'credits' ); ?>"
+			       name="<?php echo $this->get_field_name( 'credits' ); ?>" />
 			<label
-				for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e( 'Show complimentary link to ', 'bns-support' ); ?></label><a
-				href="http://buynowshop.com/">BuyNowShop.com</a>?
+				for="<?php echo $this->get_field_id( 'credits' ); ?>"><?php _e( 'Show complimentary link to ', 'bns-support' ); ?></label>
+			<a href="http://<?php echo BNS_SUPPORT_HOME; ?>/"><?php echo BNS_SUPPORT_HOME; ?></a>?
 		</p>
 
 	<?php
@@ -1000,22 +1064,23 @@ class BNS_Support_Widget extends WP_Widget {
 	/**
 	 * BNS Support Shortcode
 	 *
-	 * @package    BNS_Support
-	 * @since      1.6
+	 * @package BNS_Support
+	 * @since   1.6
 	 *
 	 * @param   $atts
 	 *
-	 * @uses       shortcode_atts
-	 * @uses       the_widget
+	 * @uses    get_bloginfo
+	 * @uses    shortcode_atts
+	 * @uses    the_widget
 	 *
 	 * @return  string
 	 *
-	 * @version    1.6.1
-	 * @date       September 7, 2013
+	 * @version 1.6.1
+	 * @date    September 7, 2013
 	 * Added shortcode name parameter for core filter auto-creation
 	 *
-	 * @version    1.8
-	 * @date       April 20, 2014
+	 * @version 1.8
+	 * @date    April 20, 2014
 	 * Added CSS class wrapper for shortcode output
 	 */
 	function bns_support_shortcode( $atts ) {
