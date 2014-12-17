@@ -74,6 +74,7 @@ Yes, this plugin has been made for multi-widget compatibility but it really serv
   http://www.gnu.org/licenses/gpl-2.0.html
 
 == Upgrade Notice ==
+= 1.9 =
 Please stay current with your WordPress installation, your active theme, and your plugins.
 
 == Changelog ==
